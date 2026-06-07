@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    {
+      "title": "Temporary placeholder task",
+      "description": "Delete this and replace with real tasks.",
+      "complete": false,
+      "category": "setup",
+      "steps": [
+        "Step 1",
+        "Step 2"
+      ]
+    }
+  ]
+}

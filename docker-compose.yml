@@ -1,0 +1,19 @@
+services:
+  claude:
+    image: node:20-slim
+    working_dir: /workspace
+    volumes:
+      - /path/to/your/project:/workspace:rw # ← only this dir, rw
+      - /tmp/claude-home:/root:rw # ← isolated home dir
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - claude-net
+    command: >
+      bash -c "npm install -g @anthropic-ai/claude-code && claude"
+
+networks:
+  claude-net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
