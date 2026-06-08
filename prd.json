@@ -50,7 +50,7 @@
     {
       "title": "Set up content collections (Content Layer API)",
       "description": "Model paintings and ceramics as Astro content collections (Astro 6 Content Layer API) so pages map over them at build time.",
-      "complete": false,
+      "complete": true,
       "category": "content",
       "steps": [
         "Create src/content.config.ts (root of src/, not inside src/content)",
