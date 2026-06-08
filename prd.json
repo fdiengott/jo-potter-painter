@@ -26,7 +26,7 @@
     {
       "title": "Configure Astro",
       "description": "Set up astro.config.mjs. Image optimization is built into astro:assets (no integration to add).",
-      "complete": false,
+      "complete": true,
       "category": "config",
       "steps": [
         "Set output to 'static'",
