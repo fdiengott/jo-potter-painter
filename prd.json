@@ -3,7 +3,7 @@
     {
       "title": "Initialize Astro project",
       "description": "Scaffold the Astro app on top of the existing package.json (astro dep + scripts already present). pnpm only.",
-      "complete": false,
+      "complete": true,
       "category": "setup",
       "steps": [
         "Scaffold src structure with the empty Astro template (pnpm, not npm) without clobbering the existing package.json/lockfile",
