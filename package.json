@@ -4,9 +4,18 @@
   "description": "Portfolio site for Jo's work as a potter and painter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "engines": {
+    "npm": "please-use-pnpm",
+    "pnpm": ">=9"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "astro": "^6.4.4"
+  }
 }
