@@ -1,0 +1,9 @@
+# Build output & generated files
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Lockfile (let pnpm own its formatting)
+pnpm-lock.yaml
