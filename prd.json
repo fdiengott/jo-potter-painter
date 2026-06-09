@@ -62,7 +62,7 @@
     {
       "title": "Seed placeholder content",
       "description": "All-placeholder seed data that exercises every gallery and detail-page code path. Real content swaps in before launch.",
-      "complete": false,
+      "complete": true,
       "category": "content",
       "steps": [
         "Download royalty-free placeholder images in varied orientations (portrait + landscape) into src/assets/paintings and src/assets/ceramics",

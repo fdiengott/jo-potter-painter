@@ -75,3 +75,19 @@ Added `src/components/Header.astro` and mounted it in `BaseLayout` above the `<s
 - Scoped `<style>` references design tokens throughout (no hardcoded scale values); written comment-free per the new CLAUDE.md directive.
 
 Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds; `dist/index.html` contains the four nav links/labels, `aria-controls="site-nav"`, and the bundled toggle logic (minified inline module).
+
+## Seed placeholder content (2026-06-09)
+
+Added five Markdown Artwork entries that exercise every gallery and detail-page code path. The user supplied a single royalty-free photo, `src/assets/rubber-duck.jpg`, to stand in for every image (so varied portrait/landscape orientations are deferred to real content); all entries reference it via `../../assets/rubber-duck.jpg` (resolved relative to each entry through the schema's `image()` helper).
+
+- `paintings/untitled-estuary.md` — 1 image, no video → **non-clickable Cover** (the common painting case).
+- `paintings/marsh-light.md` — 2 images → **detail page** (proves a painting can earn one).
+- `ceramics/tidal-vessel-no-3.md` — 3 images + a real public YouTube URL → **full detail page** (images + embed). _The video URL is a placeholder (a well-known stable public video); swap before launch._
+- `ceramics/ash-bowl-triptych.md` — 2 images, no video → **detail page, images only**.
+- `ceramics/salt-cellar.md` — 1 image, no video → **non-clickable Cover**.
+- Placeholder-but-plausible title/year/medium on each; alt text on every image (honest placeholder alt naming the piece + view); a short body description per entry.
+- Detail-page eligibility (`images.length > 1 || video`) is satisfied as intended: 3 entries qualify (Marsh Light, Tidal Vessel, Ash Bowl), 2 don't (Untitled (Estuary), Salt Cellar).
+
+Note: the user has since added page stubs for about/paintings/ceramics/contact and a 404 (`src/pages/.../index.astro`). The galleries don't query the collections yet (their own tasks), so the placeholder image isn't optimised into `dist` until a page renders it.
+
+Verified: `pnpm exec astro sync` + `astro check` → 0 errors / 0 warnings / 0 hints (content syncs, all five entries validate against the schema and `image()` resolves); `pnpm build` succeeds; the five files are Prettier-clean.
