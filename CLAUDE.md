@@ -31,3 +31,8 @@ src/
 │                       #   thank-you, 404, + [slug] detail pages
 └── styles/             # global design tokens
 ```
+
+## General Notes
+
+Reframe from leaving comments unless the code cannot explain some very important context.
+Comments are a cost that are better not incurred.

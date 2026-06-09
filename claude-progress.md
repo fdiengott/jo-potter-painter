@@ -62,3 +62,16 @@ Added `src/layouts/BaseLayout.astro` — the shared HTML shell every page render
 - `<body>` carries a TODO mount point for `<Header />` (its own task) above the `<slot />`, so this stayed a single feature.
 
 Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds; `dist/index.html` shows the composed `<title>`, canonical, description, OG tags, and the `summary_large_image` card, with `og:image` correctly absent.
+
+(Tooling, not a PRD task) Added Prettier so `astro-ls` formatting works in editors: `prettier` + `prettier-plugin-astro` in devDependencies, `.prettierrc.json` (registers the plugin, maps `*.astro` to the `astro` parser), `.prettierignore`, and `format`/`format:check` scripts. Couldn't `pnpm add` in the sandbox (node_modules linked from the user's own pnpm store → store-location mismatch); the user runs `pnpm install` in their checkout. Also: CLAUDE.md gained a directive to minimise comments.
+
+## Build site header and nav (2026-06-09)
+
+Added `src/components/Header.astro` and mounted it in `BaseLayout` above the `<slot />` (replacing the placeholder mount point).
+
+- Top-left brand: name "Josephine Florence Cooper" + subtitle "Abstract Painter / Ceramicist" (display font), linking home. (Confirmed with the user: full name incl. "Cooper", plan's subtitle wording; the home placeholder `<h1>` was updated to match.)
+- Hamburger top-right on **all** viewports (one nav implementation, no desktop/mobile split) that drops down a right-aligned panel with About, Painting Gallery, Ceramics Gallery, Contact (no Shop). Routes: `/about`, `/paintings`, `/ceramics`, `/contact`.
+- Accessible toggle (small bundled `<script>`): `aria-expanded` / `aria-controls` / dynamic `aria-label`, `hidden` toggled on the panel, animates the bars to an X, closes on Escape (returns focus to the button) and on outside-click. Active link gets `aria-current="page"` (computed from `Astro.url.pathname`, trailing slash normalised).
+- Scoped `<style>` references design tokens throughout (no hardcoded scale values); written comment-free per the new CLAUDE.md directive.
+
+Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds; `dist/index.html` contains the four nav links/labels, `aria-controls="site-nav"`, and the bundled toggle logic (minified inline module).

@@ -22,8 +22,8 @@
 
 :root {
   --font-display: Georgia, "Times New Roman", "Hoefler Text", serif;
-  --font-body: system-ui, -apple-system, "Segoe UI", Helvetica, Arial,
-    sans-serif;
+  --font-body:
+    system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
 
   /* Type scale — 1.25 (major third) modular scale; 400 = 1rem base. */
   --font-size-200: 0.8rem;
@@ -77,4 +77,12 @@
   --breakpoint-md: 48em; /* 768px */
   --breakpoint-lg: 64em; /* 1024px */
   --breakpoint-xl: 80em; /* 1280px */
+}
+
+:root {
+  --transition-duration: 0.2s;
+
+  --box-shadow-400: 0 6px 24px rgb(26 24 20 / 0.12);
+
+  --spacing-gutter: var(--spacing-400);
 }

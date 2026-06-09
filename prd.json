@@ -102,7 +102,7 @@
     {
       "title": "Build site header and nav",
       "description": "Header with artist name/title top-left and a hamburger top-right (all viewports) that drops down the nav.",
-      "complete": false,
+      "complete": true,
       "category": "layout",
       "steps": [
         "Create src/components/Header.astro",
