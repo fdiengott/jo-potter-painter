@@ -48,3 +48,17 @@ Added `src/styles/tokens.css` — the single global stylesheet (tokens + a minim
 - Temporarily imported the stylesheet in the placeholder `index.astro` to exercise the build; ownership of that import moves to `BaseLayout` when that task lands.
 
 Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds and the tokens (`--color-bg`, `--font-display`, `--breakpoint-lg`, …) appear inlined in `dist/index.html`.
+
+(Follow-up) Refactored the magnitude-scale tokens to a numeric convention where `400` is the normal/base step (higher = larger, lower = smaller), the same idea CSS font-weight uses: `--spacing-*` (300=1rem, 400=1.5rem, 500=2rem; range 50–800), `--font-size-*` (400=1rem; 200–900), `--line-height-*` (400=normal), `--font-weight-*` (name = value), `--letter-spacing-*` (300 tighten / 500 widen). Colour, layout, and breakpoints stayed semantic. The user then also split the base layer into `src/styles/base.css`, retuned the accent colour, and renamed radii to `--radius-300/400`.
+
+## Build base layout (2026-06-08)
+
+Added `src/layouts/BaseLayout.astro` — the shared HTML shell every page renders through.
+
+- Imports the global stylesheets (`tokens.css`, `base.css`), so pages no longer wire CSS themselves; the temporary imports in `index.astro` were removed and the placeholder now renders through `BaseLayout`.
+- Props: `title` (required; composed into `<title>` as `{title} · Josephine Florence`, with the site name not doubled on the home page), `description` (optional, falls back to a site description), `ogImage` (optional).
+- `<head>`: charset, viewport, SVG favicon, a canonical URL (built from `Astro.url` + `Astro.site`), generator, `<title>`, meta description.
+- Open Graph + Twitter: `og:type/site_name/title/description/url` and `twitter:card=summary_large_image` always; `og:image` / `twitter:image` are emitted only when `ogImage` is supplied (resolved to an absolute URL). Detail pages will pass their Cover. **TODO (acknowledged in the PRD step):** add a default site OG image under src/assets and wire it as the fallback for non-detail pages — deliberately not emitting a broken/missing default for now.
+- `<body>` carries a TODO mount point for `<Header />` (its own task) above the `<slot />`, so this stayed a single feature.
+
+Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds; `dist/index.html` shows the composed `<title>`, canonical, description, OG tags, and the `summary_large_image` card, with `og:image` correctly absent.

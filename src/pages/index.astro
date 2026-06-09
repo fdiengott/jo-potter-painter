@@ -1,23 +1,12 @@
 ---
-// Replace by the real Home page (BaseLayout + hero diptych) in a later task.
-// The global token stylesheet is imported here for now; ownership moves to
-// BaseLayout when that task lands.
-import '../styles/tokens.css';
-import '../styles/base.css';
+// Will be replaced by the real Home page (hero diptych) in a later task.
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Josephine Florence</title>
-  </head>
-  <body>
-    <main>
-      <h1>Josephine Florence</h1>
-      <p>Abstract Painter / Ceramicist</p>
-    </main>
-  </body>
-</html>
+<BaseLayout title="Abstract Painter / Ceramicist">
+  <main>
+    <h1>Josephine Florence</h1>
+    <p>Abstract Painter / Ceramicist</p>
+  </main>
+</BaseLayout>
+

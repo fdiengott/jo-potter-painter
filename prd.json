@@ -88,7 +88,7 @@
     {
       "title": "Build base layout",
       "description": "Shared HTML shell for all pages: head, meta, global token stylesheet, and a content slot.",
-      "complete": false,
+      "complete": true,
       "category": "layout",
       "steps": [
         "Create src/layouts/BaseLayout.astro with <html>, <head>, <body>",
