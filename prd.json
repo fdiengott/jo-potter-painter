@@ -39,7 +39,7 @@
     {
       "title": "Build global styles and design tokens",
       "description": "One global stylesheet of CSS custom properties, imported in BaseLayout. Almost no hardcoded values anywhere.",
-      "complete": false,
+      "complete": true,
       "category": "styling",
       "steps": [
         "Create src/styles/tokens.css with custom properties: colors, type scale, spacing, breakpoints, --font-display, --font-body",

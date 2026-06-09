@@ -34,3 +34,17 @@ Added `src/content.config.ts` defining the two collections (`paintings`, `cerami
 - Import nuances for Astro 6 / zod v4: `z` comes from `astro/zod` (the `astro:content` re-export is deprecated), and the video field uses top-level `z.url()` (`z.string().url()` is deprecated).
 
 Verified (Node 24 via nvm; `CI=true` so Astro's deps-status check stays non-interactive): `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds — content syncs with the empty collections and the static build completes.
+
+(Follow-up) Split the single shared `artwork` schema into a separate schema per collection. Same shape today, but that's coincidental — keeping them independent lets paintings/ceramics drift (e.g. ceramics gaining `dimensions`/`glaze`) without coupling. The user then inlined each schema directly into its `defineCollection` call.
+
+## Build global styles and design tokens (2026-06-08)
+
+Added `src/styles/tokens.css` — the single global stylesheet (tokens + a minimal base layer). Components will use scoped `<style>` that reference these custom properties; almost nothing is hardcoded, so the whole look retunes from this one file.
+
+- Tokens on `:root`: fonts (`--font-display`, `--font-body`), a 1.25 modular type scale, line-heights/weights/letter-spacing, a quiet paper/ink colour palette (muted clay accent nodding to the ceramics), a rem-step spacing scale, layout caps (`--content-max-width`, `--content-measure`), radii, and the four breakpoints.
+- Breakpoints are documented in `:root` as the single source of truth, with a note that CSS custom properties can't be used inside `@media` conditions — component media queries mirror these literal values.
+- Minimal base layer wired to the tokens: box-sizing reset, `body` bg/colour/font, display-font headings, responsive `img`/`video`, a `:focus-visible` ring, and a `prefers-reduced-motion` guard.
+- **Fonts (self-hosting) deferred, not skipped:** actual typefaces are still TBD (plan.md), so the font tokens fall back to system stacks now and a commented `@font-face` template + a `<head>` preload TODO are in place. Swapping in real `.woff2` is a two-value change — exactly the swappable design the plan calls for.
+- Temporarily imported the stylesheet in the placeholder `index.astro` to exercise the build; ownership of that import moves to `BaseLayout` when that task lands.
+
+Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm build` succeeds and the tokens (`--color-bg`, `--font-display`, `--breakpoint-lg`, …) appear inlined in `dist/index.html`.
