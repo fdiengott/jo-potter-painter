@@ -137,7 +137,7 @@
     {
       "title": "Build Painting Gallery page",
       "description": "Paintings from the collection in a two-column grid, scrolling vertically.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/paintings.astro using BaseLayout",

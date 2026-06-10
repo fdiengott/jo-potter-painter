@@ -28,7 +28,7 @@ Added `src/content.config.ts` defining the two collections (`paintings`, `cerami
 
 - Each collection has its **own** schema (`paintingSchema`, `ceramicSchema`), spelled out in full rather than sharing one definition. They have the same shape today, but that's a coincidence — keeping them separate lets either drift (e.g. ceramics adding `dimensions`/`glaze`) without disturbing the other.
 - Each collection uses a `glob({ pattern: '**/*.md', base: './src/content/<collection>' })` loader over markdown entries.
-- Both schemas are *functions* (`({ image }: SchemaContext) => ...`) so each entry's `src` flows through the `image()` helper and gets optimized by `astro:assets`.
+- Both schemas are _functions_ (`({ image }: SchemaContext) => ...`) so each entry's `src` flows through the `image()` helper and gets optimized by `astro:assets`.
 - Schema: `title` (string), `year` (int), `medium` (string), `images` (`z.array({ src: image(), alt: string }).min(1).max(5)`), `video` (optional URL). `images[0]` is the Cover; `images.length > 1 || video` is what later earns an Artwork its detail page.
 - Created the collection + asset dirs: `src/content/{paintings,ceramics}` and `src/assets/{paintings,ceramics}` (each with a `.gitkeep`). Real entries arrive in the "Seed placeholder content" task.
 - Import nuances for Astro 6 / zod v4: `z` comes from `astro/zod` (the `astro:content` re-export is deprecated), and the video field uses top-level `z.url()` (`z.string().url()` is deprecated).
@@ -69,7 +69,7 @@ Verified: `pnpm exec astro check` → 0 errors / 0 warnings / 0 hints; `pnpm bui
 
 Added `src/components/Header.astro` and mounted it in `BaseLayout` above the `<slot />` (replacing the placeholder mount point).
 
-- Top-left brand: name "Josephine Florence Cooper" + subtitle "Abstract Painter / Ceramicist" (display font), linking home. (Confirmed with the user: full name incl. "Cooper", plan's subtitle wording; the home placeholder `<h1>` was updated to match.)
+- Top-left brand: name "Josephine Florence" + subtitle "Abstract Painter / Ceramicist" (display font), linking home. (Confirmed with the user: plan's subtitle wording; the home placeholder `<h1>` was updated to match.)
 - Hamburger top-right on **all** viewports (one nav implementation, no desktop/mobile split) that drops down a right-aligned panel with About, Painting Gallery, Ceramics Gallery, Contact (no Shop). Routes: `/about`, `/paintings`, `/ceramics`, `/contact`.
 - Accessible toggle (small bundled `<script>`): `aria-expanded` / `aria-controls` / dynamic `aria-label`, `hidden` toggled on the panel, animates the bars to an X, closes on Escape (returns focus to the button) and on outside-click. Active link gets `aria-current="page"` (computed from `Astro.url.pathname`, trailing slash normalised).
 - Scoped `<style>` references design tokens throughout (no hardcoded scale values); written comment-free per the new CLAUDE.md directive.
@@ -91,3 +91,15 @@ Added five Markdown Artwork entries that exercise every gallery and detail-page 
 Note: the user has since added page stubs for about/paintings/ceramics/contact and a 404 (`src/pages/.../index.astro`). The galleries don't query the collections yet (their own tasks), so the placeholder image isn't optimised into `dist` until a page renders it.
 
 Verified: `pnpm exec astro sync` + `astro check` → 0 errors / 0 warnings / 0 hints (content syncs, all five entries validate against the schema and `image()` resolves); `pnpm build` succeeds; the five files are Prettier-clean.
+
+## Build Painting Gallery page (2026-06-09)
+
+Built `src/pages/paintings/index.astro` (the user had stubbed it at `paintings/index.astro`, so the route lives there rather than `paintings.astro`) plus a reusable `src/components/ArtworkCard.astro` that both galleries will share.
+
+- `ArtworkCard` renders one Cover via `<Picture>` (`formats={["avif","webp"]}`, responsive `widths`/`sizes`, `loading="lazy"`). Chose `<Picture>` over `<Image>` because that's what actually emits the AVIF+WebP `<source>`s the step asks for. The detail link is a **stretched overlay** anchor (`position:absolute; inset:0`) over the media, carrying the expand-icon badge and an `aria-label` — this keeps the `<Picture>` rendered once (an earlier attempt stored the JSX in a frontmatter `const`, which the production esbuild build rejected since the `---` fence is TypeScript, not JSX). The overlay + icon render only when an `href` is passed.
+- The page queries `getCollection("paintings")`, sorts by year desc, and for each entry passes the Cover (`images[0]`) plus `href = images.length > 1 || video ? /paintings/{id} : undefined`. Two-column CSS grid, collapsing to one column under the `sm` (40em) breakpoint; title/year/medium beneath each card.
+- The user refactored the inline expand SVG into its own `src/components/ExpandIcon.astro` and tweaked the icon badge styling.
+
+Sharp note: the image rendering finally exercised `astro:assets`, and the build errored with "Could not find Sharp" — the sandbox relinks had dropped it. Added `sharp` (0.34.5) as an explicit dependency (Astro 6 makes you install it yourself; `allowBuilds: sharp: true` was already set so its native build was approved).
+
+Verified: `astro check` → 0/0/0; `pnpm build` succeeds and optimizes images. In `dist/paintings/index.html`: AVIF + WebP `<source>`s per cover (the two covers dedupe to shared optimized files since they share the placeholder image); `href="/paintings/marsh-light"` present (multi-image → clickable + overlay) while `untitled-estuary` (single image) has no link; titles/years/media render in the captions.
