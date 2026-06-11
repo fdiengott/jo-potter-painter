@@ -1,6 +1,6 @@
 ---
 import { Picture } from "astro:assets";
-import ExpandIcon from "./ExpandIcon.astro";
+import LinkIcon from "./LinkIcon.astro";
 
 interface Props {
   cover: ImageMetadata;
@@ -40,7 +40,7 @@ const {
       href && (
         <a class="card__overlay" href={href} aria-label={`${title} — view`}>
           <span class="card__icon" aria-hidden="true">
-            <ExpandIcon />
+            <LinkIcon />
           </span>
         </a>
       )
