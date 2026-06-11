@@ -164,3 +164,15 @@ Built the contact flow as one increment — a form that redirects to a non-exist
 Note: the form only actually collects submissions once the site is on Netlify (the "Configure Netlify deployment" task) — the page/markup is complete and correct now; the wiring is environmental.
 
 Pending user-run `pnpm build` to confirm both compile.
+
+(Follow-up) Per the user, the Contact photo moved to the **right** (form left) at `≥48em` to complement the About page's left-hand photo — done via explicit `grid-column`/`grid-row` placement (columns `3fr 2fr`) while keeping the photo first in the DOM so mobile still stacks photo-on-top. The user also introduced `src/constants/constants.ts` (a `LINKS` route map) and switched the thank-you page's home link to `LINKS.home`.
+
+## Build custom 404 page (2026-06-11)
+
+Fleshed out `src/pages/404.astro` (Astro serves it for unmatched static routes) — an on-brand, centred not-found message with links back to Home and both galleries, using the new `LINKS` constants. Styled to match the thank-you page (same centred, `--content-measure` column).
+
+Pending user-run `pnpm build`.
+
+---
+
+Page inventory is now complete (Home, About, Paintings, Ceramics, Artwork detail, Contact, thank-you, 404). The only open PRD items are **Configure Netlify deployment** (mostly external: add `netlify.toml`, connect the GitHub repo in the Netlify dashboard, set the form-notification email, confirm a deploy) and the **Set up project folder structure** flag, which is de facto already satisfied by the existing layout.
