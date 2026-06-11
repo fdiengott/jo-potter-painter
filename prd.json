@@ -163,7 +163,7 @@
     {
       "title": "Build Artwork detail pages",
       "description": "Dedicated static page per Artwork that has more to show. Data-driven, uniform across both collections.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/paintings/[slug].astro and src/pages/ceramics/[slug].astro",

@@ -98,7 +98,7 @@ Built `src/pages/paintings/index.astro` (the user had stubbed it at `paintings/i
 
 - `ArtworkCard` renders one Cover via `<Picture>` (`formats={["avif","webp"]}`, responsive `widths`/`sizes`, `loading="lazy"`). Chose `<Picture>` over `<Image>` because that's what actually emits the AVIF+WebP `<source>`s the step asks for. The detail link is a **stretched overlay** anchor (`position:absolute; inset:0`) over the media, carrying the expand-icon badge and an `aria-label` — this keeps the `<Picture>` rendered once (an earlier attempt stored the JSX in a frontmatter `const`, which the production esbuild build rejected since the `---` fence is TypeScript, not JSX). The overlay + icon render only when an `href` is passed.
 - The page queries `getCollection("paintings")`, sorts by year desc, and for each entry passes the Cover (`images[0]`) plus `href = images.length > 1 || video ? /paintings/{id} : undefined`. Two-column CSS grid, collapsing to one column under the `sm` (40em) breakpoint; title/year/medium beneath each card.
-- The user refactored the inline expand SVG into its own `src/components/ExpandIcon.astro` and tweaked the icon badge styling.
+- The user refactored the inline expand SVG into its own `src/components/LinkIcon.astro` and tweaked the icon badge styling.
 
 Sharp note: the image rendering finally exercised `astro:assets`, and the build errored with "Could not find Sharp" — the sandbox relinks had dropped it. Added `sharp` (0.34.5) as an explicit dependency (Astro 6 makes you install it yourself; `allowBuilds: sharp: true` was already set so its native build was approved).
 
@@ -113,3 +113,14 @@ Built `src/pages/ceramics/index.astro` (again at the user's `ceramics/index.astr
 - Added an optional `sizes` prop to `ArtworkCard` (defaulting to the paintings value, so that page is unchanged); the ceramics page passes a masonry-aware `sizes` ("(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw") so the browser picks an appropriately small srcset width in the 3-column layout. Captions stay below each card (the spec allows "on hover or below").
 
 Verified: `astro check` → 0/0/0; `pnpm build` succeeds. In `dist/ceramics/index.html`: `tidal-vessel-no-3` (3 images + video) and `ash-bowl-triptych` (2 images) are clickable, `salt-cellar` (single image) is not; responsive `column-count: 1/2/3`; AVIF + WebP sources per cover; media render in captions. Files Prettier-clean.
+
+## Build Artwork detail pages (2026-06-11)
+
+Built the dynamic detail routes the galleries already link to — until now every "clickable" cover (the expand badge) pointed at a 404. Both collections share one presentation component so the pages are uniform.
+
+- `src/components/ArtworkDetail.astro` — the shared, data-driven view: title + `year · medium` header, the full image set via `<Picture>` (AVIF+WebP, `widths=[400,800,1200,1600]`, first image `eager` as the LCP, the rest lazy), an optional responsive 16:9 YouTube embed, then the Markdown body (`<slot />`). A `youtubeEmbed()` helper normalises `watch?v=` / `youtu.be/` / `/embed/` URLs to a `youtube-nocookie.com/embed/{id}` src. Left a single JSX comment marking the reserved spot for the deferred per-Artwork buy button.
+- `src/pages/paintings/[slug].astro` and `src/pages/ceramics/[slug].astro` — thin route shells. `getStaticPaths()` emits a route **only** where `images.length > 1 || video` (so single-image covers stay non-clickable, matching the gallery's `href` rule). Each looks up its entry with `getEntry`, `render()`s the body, and passes the Cover through `getImage()` (1200px jpg) as BaseLayout's `ogImage` so sharing a piece previews the piece.
+
+Sandbox note: `pnpm exec astro …` can't run here — pnpm's `verify-deps-before-run` guard tries to rewrite the read-only `node_modules/.pnpm` and dies with EACCES. The user ran `astro build` in their checkout instead.
+
+Verified (user-run `astro build`): build completes; exactly three detail pages emitted — `/paintings/marsh-light/`, `/ceramics/tidal-vessel-no-3/`, `/ceramics/ash-bowl-triptych/` — while single-image `untitled-estuary` and `salt-cellar` get no route. Cover OG images optimised into `/_astro/*.jpg`.
