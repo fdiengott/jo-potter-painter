@@ -6,6 +6,7 @@
 // back to the site default.
 import "../styles/tokens.css";
 import "../styles/base.css";
+import "../styles/utilities.css";
 import Header from "../components/Header.astro";
 
 const SITE_NAME = "Josephine Florence - Painter / Ceramicist";
@@ -54,6 +55,8 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+    <slot name="head" />
   </head>
   <body>
     <Header />

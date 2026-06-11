@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArtworkCard from "../../components/ArtworkCard.astro";
+import { LINKS } from "../../constants/constants";
 
 const paintings = (await getCollection("paintings")).sort(
   (a, b) => b.data.year - a.data.year,
@@ -25,7 +26,9 @@ const paintings = (await getCollection("paintings")).sort(
                 title={artwork.data.title}
                 year={artwork.data.year}
                 medium={artwork.data.medium}
-                href={hasDetailPage ? `/paintings/${artwork.id}` : undefined}
+                href={
+                  hasDetailPage ? `${LINKS.paintings}/${artwork.id}` : undefined
+                }
               />
             </li>
           );

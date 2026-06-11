@@ -124,3 +124,16 @@ Built the dynamic detail routes the galleries already link to — until now ever
 Sandbox note: `pnpm exec astro …` can't run here — pnpm's `verify-deps-before-run` guard tries to rewrite the read-only `node_modules/.pnpm` and dies with EACCES. The user ran `astro build` in their checkout instead.
 
 Verified (user-run `astro build`): build completes; exactly three detail pages emitted — `/paintings/marsh-light/`, `/ceramics/tidal-vessel-no-3/`, `/ceramics/ash-bowl-triptych/` — while single-image `untitled-estuary` and `salt-cellar` get no route. Cover OG images optimised into `/_astro/*.jpg`.
+
+(Note: git is unavailable in this sandbox — the progress log is the source of truth for what's done, not commit history. The previous loop's detail-pages work was never committed via git; treat the log + `prd.json` flags as authoritative.)
+
+## Build Home page (2026-06-11)
+
+Replaced the placeholder `src/pages/index.astro` with the real landing page: a full-bleed two-image hero diptych. The artist name/subtitle top-left is already supplied by the `Header` (on every page, in the display font), so the page adds a visually-hidden `<h1>` ("Josephine Florence — Abstract Painter / Ceramicist") for document structure without doubling the visible name.
+
+- **Data-driven hero:** pulls the most recent painting Cover and the most recent ceramic Cover (each collection sorted by year desc, `[0]`) — one panel per practice, as plan.md describes. Swaps automatically when real art lands; today both resolve to the shared `rubber-duck.jpg` placeholder. Each panel is a link to its gallery (`/paintings`, `/ceramics`) with an `aria-label`, keeping the visual as two clean edge-to-edge images.
+- **Layout:** CSS grid `1fr 1fr` at `80svh` (tall band that lets the next content peek), `object-fit: cover` on a shared height so the two halves always align; full-bleed because BaseLayout's `<slot>` is a direct child of `<body>` (no max-width wrapper). Stacks to one column, each `50svh`, under the `48em` breakpoint.
+- **LCP handling:** hero images render via `<Image format="webp">` with `widths=[768,1280,1920,2560]` (source is 5269×3513, so all widths are real downscales), `loading="eager"`, `fetchpriority="high"`. To honour the plan's "preloaded" requirement, added a named `<slot name="head" />` to `BaseLayout` and the page emits `<link rel="preload" as="image" type="image/webp" imagesrcset … imagesizes>` per panel (computed with `getImage()`, same format/widths so they dedupe against the rendered `<Image>`).
+- Home `<title>` passes the exact `SITE_NAME` so BaseLayout's no-double special case yields a clean title.
+
+Verified (user-run `pnpm build`): build completes; `/index.html` built; the hero webp set generated at all four widths (33kB @768 → 912kB @2560). Sandbox still can't run `pnpm exec`/the astro binary directly, so the user runs the build.

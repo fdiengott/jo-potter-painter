@@ -57,6 +57,8 @@
   --color-accent: #9a5b41; /* toffee brown */
   /* --color-accent: #a3ccb3; */
 
+  --color-ink-scrim: color-mix(in srgb, var(--color-ink) 55%, transparent);
+
   --spacing-50: 0.25rem;
   --spacing-100: 0.5rem;
   --spacing-200: 0.75rem;

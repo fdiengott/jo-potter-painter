@@ -114,7 +114,7 @@
     {
       "title": "Build Home page",
       "description": "Landing page with name/title and a full-bleed two-image hero diptych.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/index.astro using BaseLayout",

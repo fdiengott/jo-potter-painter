@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArtworkCard from "../../components/ArtworkCard.astro";
+import { LINKS } from "../../constants/constants";
 
 const ceramics = (await getCollection("ceramics")).sort(
   (a, b) => b.data.year - a.data.year,
@@ -25,7 +26,9 @@ const ceramics = (await getCollection("ceramics")).sort(
                 title={artwork.data.title}
                 year={artwork.data.year}
                 medium={artwork.data.medium}
-                href={hasDetailPage ? `/ceramics/${artwork.id}` : undefined}
+                href={
+                  hasDetailPage ? `${LINKS.ceramics}/${artwork.id}` : undefined
+                }
                 sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
               />
             </li>
