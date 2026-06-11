@@ -103,3 +103,13 @@ Built `src/pages/paintings/index.astro` (the user had stubbed it at `paintings/i
 Sharp note: the image rendering finally exercised `astro:assets`, and the build errored with "Could not find Sharp" — the sandbox relinks had dropped it. Added `sharp` (0.34.5) as an explicit dependency (Astro 6 makes you install it yourself; `allowBuilds: sharp: true` was already set so its native build was approved).
 
 Verified: `astro check` → 0/0/0; `pnpm build` succeeds and optimizes images. In `dist/paintings/index.html`: AVIF + WebP `<source>`s per cover (the two covers dedupe to shared optimized files since they share the placeholder image); `href="/paintings/marsh-light"` present (multi-image → clickable + overlay) while `untitled-estuary` (single image) has no link; titles/years/media render in the captions.
+
+## Build Ceramics Gallery page (2026-06-10)
+
+Built `src/pages/ceramics/index.astro` (again at the user's `ceramics/index.astro` stub), reusing `ArtworkCard` — so the only real difference from paintings is the layout.
+
+- **Masonry via CSS multi-column** (`column-count` + `break-inside: avoid` on each `<li>`), no JS: 1 column on mobile, 2 at 40em, 3 at 64em. Variable-height by nature; the shared placeholder image makes every tile the same height for now, but real varied photos will stagger.
+- Queries `getCollection("ceramics")`, sorts by year desc, same detail-page rule (`images.length > 1 || video`) → `/ceramics/{id}`.
+- Added an optional `sizes` prop to `ArtworkCard` (defaulting to the paintings value, so that page is unchanged); the ceramics page passes a masonry-aware `sizes` ("(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw") so the browser picks an appropriately small srcset width in the 3-column layout. Captions stay below each card (the spec allows "on hover or below").
+
+Verified: `astro check` → 0/0/0; `pnpm build` succeeds. In `dist/ceramics/index.html`: `tidal-vessel-no-3` (3 images + video) and `ash-bowl-triptych` (2 images) are clickable, `salt-cellar` (single image) is not; responsive `column-count: 1/2/3`; AVIF + WebP sources per cover; media render in captions. Files Prettier-clean.

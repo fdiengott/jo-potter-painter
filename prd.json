@@ -150,7 +150,7 @@
     {
       "title": "Build Ceramics Gallery page",
       "description": "Ceramics from the collection in a masonry-style grid.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/ceramics.astro using BaseLayout",

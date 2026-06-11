@@ -10,9 +10,19 @@ interface Props {
   medium: string;
   href?: string;
   loading?: "lazy" | "eager";
+  sizes?: string;
 }
 
-const { cover, alt, title, year, medium, href, loading = "lazy" } = Astro.props;
+const {
+  cover,
+  alt,
+  title,
+  year,
+  medium,
+  href,
+  loading = "lazy",
+  sizes = "(min-width: 40em) 50vw, 100vw",
+} = Astro.props;
 ---
 
 <figure class="card">
@@ -23,7 +33,7 @@ const { cover, alt, title, year, medium, href, loading = "lazy" } = Astro.props;
       formats={["avif", "webp"]}
       alt={alt}
       widths={[400, 800, 1200]}
-      sizes="(min-width: 40em) 50vw, 100vw"
+      sizes={sizes}
       loading={loading}
     />
     {
