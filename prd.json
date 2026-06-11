@@ -199,7 +199,7 @@
     {
       "title": "Build custom 404 page",
       "description": "On-brand not-found page (Astro serves src/pages/404.astro for unmatched static routes).",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/404.astro using BaseLayout",
