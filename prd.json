@@ -176,7 +176,7 @@
     {
       "title": "Build Contact page",
       "description": "Photo on the left, form on the right, wired to Netlify Forms.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/contact.astro using BaseLayout",
@@ -189,7 +189,7 @@
     {
       "title": "Build thank-you page",
       "description": "Custom success route the contact form redirects to after submission.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/thank-you.astro using BaseLayout",

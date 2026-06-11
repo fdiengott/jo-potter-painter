@@ -149,3 +149,18 @@ Built `src/pages/about/index.astro` (the user's stub) — a bio with a size-capp
 - **Mobile (`≤40em`):** float drops, photo goes on top, centred, keeping its `min(100%, 360px)` cap so a low-res image is never blown up — exactly the plan's instruction.
 
 Pending user-run `pnpm build` to confirm it compiles.
+
+(Follow-up) The user reworked the About styles to mobile-first: base rules are the stacked/centred photo, and a `@media (min-width: 40em)` block adds the float — same result, inverted breakpoint direction — and simplified the alt to "portrait of Josephine Florence".
+
+## Build Contact page + thank-you page (2026-06-11)
+
+Built the contact flow as one increment — a form that redirects to a non-existent success route isn't a complete feature, so the thank-you page is its required target.
+
+- `src/pages/contact/index.astro` — photo left, form right (a CSS grid: `2fr 3fr` at `≥48em`, stacked below). Also fixed the stub's copy-paste `title="About"` → `"Contact"`.
+- **Netlify Forms, server-rendered (not in a client island)** so Netlify's build-time HTML scan detects it: `name="contact"`, `method="POST"`, `data-netlify="true"`, a hidden `form-name=contact` input, and honeypot-only spam protection (`netlify-honeypot="bot-field"` + a `<p hidden>` bot-field). Fields Name / Email (`type="email"`) / Subject / Message (`<textarea>`), all `required`. `action="/thank-you"` redirects on success. Submission email address is set in the Netlify dashboard (deferred to the deploy task).
+- Photo is the shared `rubber-duck.jpg` placeholder, lazy-loaded, `widths=[480,960]`.
+- `src/pages/thank-you.astro` — on-brand centred confirmation ("Your message is on its way to Josephine…") with a link back home.
+
+Note: the form only actually collects submissions once the site is on Netlify (the "Configure Netlify deployment" task) — the page/markup is complete and correct now; the wiring is environmental.
+
+Pending user-run `pnpm build` to confirm both compile.
