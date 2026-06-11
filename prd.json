@@ -126,7 +126,7 @@
     {
       "title": "Build About page",
       "description": "Bio with a size-capped photo floated left and text wrapping around it. Not full-bleed (image quality uncertain).",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/about.astro using BaseLayout",

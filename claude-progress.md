@@ -137,3 +137,15 @@ Replaced the placeholder `src/pages/index.astro` with the real landing page: a f
 - Home `<title>` passes the exact `SITE_NAME` so BaseLayout's no-double special case yields a clean title.
 
 Verified (user-run `pnpm build`): build completes; `/index.html` built; the hero webp set generated at all four widths (33kB @768 → 912kB @2560). Sandbox still can't run `pnpm exec`/the astro binary directly, so the user runs the build.
+
+(Follow-up) Added a hover/focus label to each diptych panel: a semi-transparent black backdrop (`--color-ink` @ 55%, matching the existing card overlays) with centred white display-font text — "Abstract Painting" on the painting panel, "Ceramics" on the ceramic panel. Hover-only per the user's choice (no persistent label on touch); also revealed on keyboard `:focus-visible`. The visible label is `aria-hidden` since the panel link already carries the name via `aria-label`. The user then factored `.visually-hidden` out into a global `src/styles/utilities.css` (imported in BaseLayout) and reworked the `.hero` grid to `repeat(auto-fit, minmax(calc(var(--breakpoint-md) / 2), 1fr))`; the scoped duplicate was removed from the page.
+
+## Build About page (2026-06-11)
+
+Built `src/pages/about/index.astro` (the user's stub) — a bio with a size-capped photo floated left and the text wrapping around it. Deliberately not full-bleed (unlike the Home hero), per plan.md, because the eventual portrait's quality is uncertain.
+
+- **Bio copy lives in its own Markdown file**, not hardcoded in the page: `src/pages/about/_bio.md` (the `_` prefix keeps it out of Astro routing) holds lorem-ipsum placeholder paragraphs, imported as `{ Content as Bio }` and rendered `<Bio />`. Kept it co-located with the page rather than under `src/content/` so it doesn't intrude on the Artwork collections that `CONTEXT.md` reserves for paintings/ceramics. Swap the lorem for real bio copy before launch.
+- **Photo:** `<Image>` floated left at `width: min(40%, 360px)`, lazy-loaded, `widths=[360,720]` (360px display + 2× retina; the source is far larger so it's never upscaled). Honest placeholder alt naming the rubber-duck stand-in.
+- **Mobile (`≤40em`):** float drops, photo goes on top, centred, keeping its `min(100%, 360px)` cap so a low-res image is never blown up — exactly the plan's instruction.
+
+Pending user-run `pnpm build` to confirm it compiles.
