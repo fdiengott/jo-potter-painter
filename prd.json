@@ -14,7 +14,7 @@
         {
             "title": "Set up project folder structure",
             "description": "Establish the directory layout. Source images live in src/ so astro:assets can optimize them; public/ holds only static-path assets.",
-            "complete": false,
+            "complete": true,
             "category": "setup",
             "steps": [
                 "Create src/pages, src/layouts, src/components, src/content, src/styles",
@@ -77,7 +77,7 @@
         {
             "title": "Configure Netlify deployment",
             "description": "Wire the repo to Netlify so every push to main deploys automatically (see ADR 0001).",
-            "complete": false,
+            "complete": true,
             "category": "deployment",
             "steps": [
                 "Add netlify.toml with build command (pnpm build) and publish directory (dist)",
@@ -215,12 +215,31 @@
             "steps": []
         },
         {
-            "deferred": true,
-            "title": "Self-serve admin uploads",
-            "description": "Admin page to add Artworks: magic-link auth (allowlist checked server-side), a Netlify Function validates the JWT and commits Base64-encoded images to Git (Trees API), triggering a redeploy. Cover changes stay manual. Video stays external (URL only).",
+            "title": "Admin page + magic-link auth",
+            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. Email delivery is still mocked (console). /admin is excluded from robots.txt and the sitemap. See ADR 0003.",
             "complete": false,
             "category": "admin",
-            "steps": []
+            "steps": [
+                "src/pages/admin.astro mounts AdminIsland with client:only=react; the island branches on a ?token= query param (MagicLink form vs MultiImageForm) — presence drives display only, validity is enforced server-side",
+                "MagicLink form POSTs to /request-magic-link; MagicLinkSubmitted renders success/error states (CSS modules + design tokens)",
+                "netlify/functions/requestMagicLink.ts: POST-only, env + JSON-parse + allowlist guards, signs HS256 JWT (sub=email, 15m), returns a generic 200 to avoid allowlist enumeration",
+                "Set project to ESM (type: module) so the function bundles as .mjs and can import jose; added jose dependency",
+                "Exclude /admin from robots.txt (Disallow) and the sitemap (filter in astro.config.mjs)",
+                "TODO: replace the mock email client (netlify/lib/emailClient.ts) with a real transactional provider"
+            ]
+        },
+        {
+            "deferred": true,
+            "title": "Admin upload + publish function",
+            "description": "The publish Netlify Function: verify the JWT (same secret), assign unique append-only filenames, and commit Base64-encoded images plus the content entry as one atomic commit via the GitHub Trees API, triggering a redeploy. Cover is set by image order in the admin (no separate cover field); video stays external (URL only). See ADR 0003.",
+            "complete": false,
+            "category": "admin",
+            "steps": [
+                "MultiImageForm: stage 1-5 images + metadata (title, year, medium, collection, per-image alt) and order images (images[0] = Cover)",
+                "Resize/compress images client-side before Base64 to stay under the ~6MB Function body limit",
+                "publish Function verifies the JWT, generates unique filenames, and builds one commit (image blobs + entry) via the GitHub Trees API",
+                "Entry written to src/content/<collection>/<slug>.md with images[].src pointing at ../../assets/..."
+            ]
         }
     ]
 }

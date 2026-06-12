@@ -62,3 +62,12 @@ video {
         scroll-behavior: auto !important;
     }
 }
+
+button {
+    background-color: var(--color-accent);
+    color: var(--color-surface);
+    border-radius: var(--radius-400);
+    cursor: pointer;
+    border: 0;
+    padding: var(--spacing-100);
+}

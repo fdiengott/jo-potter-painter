@@ -22,9 +22,10 @@ interface Props {
      * the fallback so non-detail pages still preview an image when shared.
      */
     ogImage?: string
+    stripped?: boolean
 }
 
-const { title, description = SITE_DESCRIPTION, ogImage } = Astro.props
+const { title, description = SITE_DESCRIPTION, ogImage, stripped } = Astro.props
 
 const pageTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`
 
@@ -38,23 +39,29 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="canonical" href={canonicalURL} />
-        <meta name="generator" content={Astro.generator} />
+        {
+            !stripped && (
+                <>
+                    <link rel="canonical" href={canonicalURL} />
+                    <meta name="generator" content={Astro.generator} />
 
-        <title>{pageTitle}</title>
-        <meta name="description" content={description} />
+                    <title>{pageTitle}</title>
+                    <meta name="description" content={description} />
 
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={canonicalURL} />
-        {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+                    <meta property="og:type" content="website" />
+                    <meta property="og:site_name" content={SITE_NAME} />
+                    <meta property="og:title" content={title} />
+                    <meta property="og:description" content={description} />
+                    <meta property="og:url" content={canonicalURL} />
+                    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+                    <meta name="twitter:card" content="summary_large_image" />
+                    <meta name="twitter:title" content={title} />
+                    <meta name="twitter:description" content={description} />
+                    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+                </>
+            )
+        }
 
         <slot name="head" />
     </head>

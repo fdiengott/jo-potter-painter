@@ -33,15 +33,17 @@ Easy wins only — Jo isn't active on social, so no heavy investment.
 - A clickable Cover (one whose Artwork has a detail page) shows an **icon overlay** signalling it's a link; non-clickable Covers (single image, no video — most paintings) have no icon and aren't clickable. The icon makes the affordance explicit.
 - Detail pages are where the deferred per-Artwork buy button will live. There is no separate Shop page.
 
-### Image Uploads (deferred)
+### Image Uploads (Phase 2 in progress)
 
 - Content modeled as a collection from day one (images + metadata entries)
 - Phase 1: manual uploads
-- Phase 2: self-serve admin page → serverless function → Git commit → deploy
+- Phase 2: self-serve admin page → serverless function → Git commit → deploy (see ADR 0003 for the full design)
     - Auth: magic link; allowlist checked server-side before any email is sent
     - Security boundary: serverless function validates JWT (not the browser island)
     - Binaries: Base64-encoded; unique filenames to stay append-only
     - UX: batch-stage in browser → single publish → one commit (Trees API, deferred)
+    - Cover is set by image order in the admin (no separate cover field)
+    - **Status:** auth/request half built — `/admin` island (`AdminIsland` → `MagicLink`/`MultiImageForm`) + the `request-magic-link` Function signing the JWT (email delivery still mocked). The publish/commit Function (JWT verify + Trees API) is not yet built.
 
 ### E-commerce (deferred)
 
