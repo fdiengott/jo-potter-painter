@@ -1,113 +1,104 @@
 ---
-import { Picture } from "astro:assets";
-import LinkIcon from "./LinkIcon.astro";
+import { Picture } from "astro:assets"
+import LinkIcon from "./LinkIcon.astro"
 
 interface Props {
-  cover: ImageMetadata;
-  alt: string;
-  title: string;
-  year: number;
-  medium: string;
-  href?: string;
-  loading?: "lazy" | "eager";
-  sizes?: string;
+    cover: ImageMetadata
+    alt: string
+    title: string
+    year: number
+    medium: string
+    href?: string
+    loading?: "lazy" | "eager"
+    sizes?: string
 }
 
-const {
-  cover,
-  alt,
-  title,
-  year,
-  medium,
-  href,
-  loading = "lazy",
-  sizes = "(min-width: 40em) 50vw, 100vw",
-} = Astro.props;
+const { cover, alt, title, year, medium, href, loading = "lazy", sizes = "(min-width: 40em) 50vw, 100vw" } = Astro.props
 ---
 
 <figure class="card">
-  <div class="card__media">
-    <!-- TODO: make this view transition to details page-->
-    <Picture
-      src={cover}
-      formats={["avif", "webp"]}
-      alt={alt}
-      widths={[400, 800, 1200]}
-      sizes={sizes}
-      loading={loading}
-    />
-    {
-      href && (
-        <a class="card__overlay" href={href} aria-label={`${title} — view`}>
-          <span class="card__icon" aria-hidden="true">
-            <LinkIcon />
-          </span>
-        </a>
-      )
-    }
-  </div>
-  <figcaption class="card__caption">
-    <span class="card__title">{title}</span>
-    <span class="card__meta">{year} · {medium}</span>
-  </figcaption>
+    <div class="card__media">
+        <!-- TODO: make this view transition to details page-->
+        <Picture
+            src={cover}
+            formats={["avif", "webp"]}
+            alt={alt}
+            widths={[400, 800, 1200]}
+            sizes={sizes}
+            loading={loading}
+        />
+        {
+            href && (
+                <a class="card__overlay" href={href} aria-label={`${title} — view`}>
+                    <span class="card__icon" aria-hidden="true">
+                        <LinkIcon />
+                    </span>
+                </a>
+            )
+        }
+    </div>
+    <figcaption class="card__caption">
+        <span class="card__title">{title}</span>
+        <span class="card__meta">{year} · {medium}</span>
+    </figcaption>
 </figure>
 
 <style>
-  .card {
-    margin: 0;
-  }
+    .card {
+        margin: 0;
+    }
 
-  .card__media {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius-400);
-    background: var(--color-border);
-  }
+    .card__media {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-400);
+        background: var(--color-border);
+    }
 
-  .card__media :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform var(--transition-duration) ease;
-  }
+    .card__media :global(img) {
+        display: block;
+        width: 100%;
+        height: auto;
+        transition: transform var(--transition-duration) ease;
+    }
 
-  .card__media:has(.card__overlay:hover) :global(img) {
-    transform: scale(1.03);
-  }
+    .card__media:has(.card__overlay:hover) :global(img) {
+        transform: scale(1.03);
+    }
 
-  .card__overlay {
-    position: absolute;
-    inset: 0;
-  }
+    .card__overlay {
+        position: absolute;
+        inset: 0;
+    }
 
-  .card__icon {
-    position: absolute;
-    inset-block-start: var(--spacing-200);
-    inset-inline-end: var(--spacing-200);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    color: var(--color-surface);
-    background: var(--color-ink-scrim);
-    border: 1px solid var(--color-ink-muted);
-  }
+    .card__icon {
+        position: absolute;
+        inset-block-start: var(--spacing-200);
+        inset-inline-end: var(--spacing-200);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        color: var(--color-surface);
+        background: var(--color-ink-scrim);
+        border: 1px solid var(--color-ink-muted);
+    }
 
-  .card__caption {
-    display: grid;
-    gap: var(--spacing-50);
-    margin-block-start: var(--spacing-200);
-  }
+    .card__caption {
+        display: grid;
+        gap: var(--spacing-50);
+        margin-block-start: var(--spacing-200);
+    }
 
-  .card__title {
-    font-family: var(--font-display);
-    font-size: var(--font-size-500);
-  }
+    .card__title {
+        font-family: var(--font-display);
+        font-size: var(--font-size-500);
+    }
 
-  .card__meta {
-    font-size: var(--font-size-300);
-    color: var(--color-ink-muted);
-  }
+    .card__meta {
+        font-size: var(--font-size-300);
+        color: var(--color-ink-muted);
+    }
 </style>

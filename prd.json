@@ -1,226 +1,226 @@
 {
-  "tasks": [
-    {
-      "title": "Initialize Astro project",
-      "description": "Scaffold the Astro app on top of the existing package.json (astro dep + scripts already present). pnpm only.",
-      "complete": true,
-      "category": "setup",
-      "steps": [
-        "Scaffold src structure with the empty Astro template (pnpm, not npm) without clobbering the existing package.json/lockfile",
-        "Set pnpm-workspace.yaml allowBuilds: sharp: true (required by astro:assets) and esbuild: true",
-        "Verify the dev server runs with `pnpm start`"
-      ]
-    },
-    {
-      "title": "Set up project folder structure",
-      "description": "Establish the directory layout. Source images live in src/ so astro:assets can optimize them; public/ holds only static-path assets.",
-      "complete": false,
-      "category": "setup",
-      "steps": [
-        "Create src/pages, src/layouts, src/components, src/content, src/styles",
-        "Create src/assets/paintings and src/assets/ceramics for optimizable source images",
-        "Reserve public/ for favicon, OG image, and anything that must keep an exact path",
-        "Add .gitignore entries for node_modules, dist, .env"
-      ]
-    },
-    {
-      "title": "Configure Astro",
-      "description": "Set up astro.config.mjs. Image optimization is built into astro:assets (no integration to add).",
-      "complete": true,
-      "category": "config",
-      "steps": [
-        "Set output to 'static'",
-        "Set the production site URL (required by sitemap and canonical URLs)",
-        "Add the @astrojs/sitemap integration",
-        "Add a robots.txt (in public/) pointing to sitemap.xml",
-        "Confirm astro:assets image optimization works (sharp available)"
-      ]
-    },
-    {
-      "title": "Build global styles and design tokens",
-      "description": "One global stylesheet of CSS custom properties, imported in BaseLayout. Almost no hardcoded values anywhere.",
-      "complete": true,
-      "category": "styling",
-      "steps": [
-        "Create src/styles/tokens.css with custom properties: colors, type scale, spacing, breakpoints, --font-display, --font-body",
-        "Self-host fonts: add .woff2 files, @font-face with font-display: swap, preload the display face",
-        "Use scoped <style> per component; reference tokens, do not hardcode values"
-      ]
-    },
-    {
-      "title": "Set up content collections (Content Layer API)",
-      "description": "Model paintings and ceramics as Astro content collections (Astro 6 Content Layer API) so pages map over them at build time.",
-      "complete": true,
-      "category": "content",
-      "steps": [
-        "Create src/content.config.ts (root of src/, not inside src/content)",
-        "Define a glob loader per collection over data/markdown entries",
-        "Schema per Artwork: title, year, medium, images: z.array(z.object({ src: image(), alt: z.string() })).min(1).max(5), video: z.string().url().optional()",
-        "First image in the array is the Cover; src images resolve to src/assets/paintings or src/assets/ceramics"
-      ]
-    },
-    {
-      "title": "Seed placeholder content",
-      "description": "All-placeholder seed data that exercises every gallery and detail-page code path. Real content swaps in before launch.",
-      "complete": true,
-      "category": "content",
-      "steps": [
-        "Download royalty-free placeholder images in varied orientations (portrait + landscape) into src/assets/paintings and src/assets/ceramics",
-        "Ceramic A: multiple images + a real public YouTube URL -> full detail page (images + embed)",
-        "Ceramic B: multiple images, no video -> detail page, images only",
-        "Ceramic C: single image -> no detail page, non-clickable Cover",
-        "Painting A: single image, no video -> non-clickable Cover (the common case)",
-        "Painting B: multiple images -> detail page (proves a painting can get one)",
-        "Lorem-ish title/year/medium; alt text on every image"
-      ]
-    },
-    {
-      "title": "Configure Netlify deployment",
-      "description": "Wire the repo to Netlify so every push to main deploys automatically (see ADR 0001).",
-      "complete": false,
-      "category": "deployment",
-      "steps": [
-        "Add netlify.toml with build command (pnpm build) and publish directory (dist)",
-        "Connect the GitHub repo to a new Netlify site",
-        "Confirm a deploy succeeds on the empty project"
-      ]
-    },
-    {
-      "title": "Build base layout",
-      "description": "Shared HTML shell for all pages: head, meta, global token stylesheet, and a content slot.",
-      "complete": true,
-      "category": "layout",
-      "steps": [
-        "Create src/layouts/BaseLayout.astro with <html>, <head>, <body>",
-        "Accept title and description props; render <title>, meta description, and a canonical URL",
-        "Add Open Graph + twitter:card=summary_large_image tags; ogImage prop defaults to the site default OG image (TODO: point at an image in src/assets)",
-        "Add charset, viewport, and a favicon",
-        "Import the global tokens stylesheet",
-        "Include the Header and a <slot /> for page content"
-      ]
-    },
-    {
-      "title": "Build site header and nav",
-      "description": "Header with artist name/title top-left and a hamburger top-right (all viewports) that drops down the nav.",
-      "complete": true,
-      "category": "layout",
-      "steps": [
-        "Create src/components/Header.astro",
-        "Add name ('Josephine Florence') and subtitle ('Abstract Painter / Ceramicist') top-left in the display font",
-        "Add hamburger top-right on all viewports with links: About, Painting Gallery, Ceramics Gallery, Contact (no Shop)",
-        "Wire up open/close toggle (minimal <script> / small island)"
-      ]
-    },
-    {
-      "title": "Build Home page",
-      "description": "Landing page with name/title and a full-bleed two-image hero diptych.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/index.astro using BaseLayout",
-        "Two edge-to-edge images as a 50/50 diptych; object-fit: cover on a shared aspect ratio",
-        "Stack vertically (each full-width) on mobile via the breakpoint token",
-        "Hero images: loading=eager, fetchpriority=high, preloaded (they are the LCP)"
-      ]
-    },
-    {
-      "title": "Build About page",
-      "description": "Bio with a size-capped photo floated left and text wrapping around it. Not full-bleed (image quality uncertain).",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/about.astro using BaseLayout",
-        "Photo floated left (float: left), max-width: min(40%, 360px), never upscaled beyond source; bio text wraps around it with a margin",
-        "Mobile: drop the float, photo on top, centered, keep the max-width (never blow up a low-res image); lazy-loaded"
-      ]
-    },
-    {
-      "title": "Build Painting Gallery page",
-      "description": "Paintings from the collection in a two-column grid, scrolling vertically.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/paintings.astro using BaseLayout",
-        "Query the paintings collection with getCollection()",
-        "Render one Cover (images[0]) per Artwork, two per row, with <Image> (AVIF+WebP, lazy)",
-        "Wrap the Cover in a link with an icon overlay only when the Artwork has a detail page (images.length > 1 || video)",
-        "Display title, year, medium beneath each"
-      ]
-    },
-    {
-      "title": "Build Ceramics Gallery page",
-      "description": "Ceramics from the collection in a masonry-style grid.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/ceramics.astro using BaseLayout",
-        "Query the ceramics collection with getCollection()",
-        "Render one Cover (images[0]) per Artwork in a masonry/variable-height grid with <Image> (AVIF+WebP, lazy)",
-        "Wrap the Cover in a link with an icon overlay when the Artwork has a detail page (images.length > 1 || video)",
-        "Display title, year, medium on hover or below each"
-      ]
-    },
-    {
-      "title": "Build Artwork detail pages",
-      "description": "Dedicated static page per Artwork that has more to show. Data-driven, uniform across both collections.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/paintings/[slug].astro and src/pages/ceramics/[slug].astro",
-        "getStaticPaths() emits a route only for entries where images.length > 1 || video is set",
-        "Render the full image set with <Picture> and the YouTube embed when present",
-        "Pass the Artwork's Cover as the BaseLayout ogImage so sharing the page previews the piece",
-        "Show title, year, medium; leave a reserved spot for the deferred per-Artwork buy button"
-      ]
-    },
-    {
-      "title": "Build Contact page",
-      "description": "Photo on the left, form on the right, wired to Netlify Forms.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/contact.astro using BaseLayout",
-        "Photo on the left side",
-        "Static HTML form on the right (data-netlify, hidden form-name, honeypot) with Name, Email, Subject, Message, all required",
-        "Set the form action to redirect to the custom thank-you page",
-        "Keep the form as server-rendered HTML, NOT inside a client island (Netlify scans built HTML)"
-      ]
-    },
-    {
-      "title": "Build thank-you page",
-      "description": "Custom success route the contact form redirects to after submission.",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/thank-you.astro using BaseLayout",
-        "On-brand confirmation message with a link back home"
-      ]
-    },
-    {
-      "title": "Build custom 404 page",
-      "description": "On-brand not-found page (Astro serves src/pages/404.astro for unmatched static routes).",
-      "complete": true,
-      "category": "page",
-      "steps": [
-        "Create src/pages/404.astro using BaseLayout",
-        "Friendly message with links back to Home and the galleries"
-      ]
-    },
-    {
-      "deferred": true,
-      "title": "Per-Artwork buy button (e-commerce)",
-      "description": "Embeddable Stripe/Shopify-style buy button as an island on Artwork detail pages. No standalone Shop page. Operational concerns (one-of-a-kind inventory, fragile shipping, tax) are the real challenge.",
-      "complete": false,
-      "category": "ecommerce",
-      "steps": []
-    },
-    {
-      "deferred": true,
-      "title": "Self-serve admin uploads",
-      "description": "Admin page to add Artworks: magic-link auth (allowlist checked server-side), a Netlify Function validates the JWT and commits Base64-encoded images to Git (Trees API), triggering a redeploy. Cover changes stay manual. Video stays external (URL only).",
-      "complete": false,
-      "category": "admin",
-      "steps": []
-    }
-  ]
+    "tasks": [
+        {
+            "title": "Initialize Astro project",
+            "description": "Scaffold the Astro app on top of the existing package.json (astro dep + scripts already present). pnpm only.",
+            "complete": true,
+            "category": "setup",
+            "steps": [
+                "Scaffold src structure with the empty Astro template (pnpm, not npm) without clobbering the existing package.json/lockfile",
+                "Set pnpm-workspace.yaml allowBuilds: sharp: true (required by astro:assets) and esbuild: true",
+                "Verify the dev server runs with `pnpm start`"
+            ]
+        },
+        {
+            "title": "Set up project folder structure",
+            "description": "Establish the directory layout. Source images live in src/ so astro:assets can optimize them; public/ holds only static-path assets.",
+            "complete": false,
+            "category": "setup",
+            "steps": [
+                "Create src/pages, src/layouts, src/components, src/content, src/styles",
+                "Create src/assets/paintings and src/assets/ceramics for optimizable source images",
+                "Reserve public/ for favicon, OG image, and anything that must keep an exact path",
+                "Add .gitignore entries for node_modules, dist, .env"
+            ]
+        },
+        {
+            "title": "Configure Astro",
+            "description": "Set up astro.config.mjs. Image optimization is built into astro:assets (no integration to add).",
+            "complete": true,
+            "category": "config",
+            "steps": [
+                "Set output to 'static'",
+                "Set the production site URL (required by sitemap and canonical URLs)",
+                "Add the @astrojs/sitemap integration",
+                "Add a robots.txt (in public/) pointing to sitemap.xml",
+                "Confirm astro:assets image optimization works (sharp available)"
+            ]
+        },
+        {
+            "title": "Build global styles and design tokens",
+            "description": "One global stylesheet of CSS custom properties, imported in BaseLayout. Almost no hardcoded values anywhere.",
+            "complete": true,
+            "category": "styling",
+            "steps": [
+                "Create src/styles/tokens.css with custom properties: colors, type scale, spacing, breakpoints, --font-display, --font-body",
+                "Self-host fonts: add .woff2 files, @font-face with font-display: swap, preload the display face",
+                "Use scoped <style> per component; reference tokens, do not hardcode values"
+            ]
+        },
+        {
+            "title": "Set up content collections (Content Layer API)",
+            "description": "Model paintings and ceramics as Astro content collections (Astro 6 Content Layer API) so pages map over them at build time.",
+            "complete": true,
+            "category": "content",
+            "steps": [
+                "Create src/content.config.ts (root of src/, not inside src/content)",
+                "Define a glob loader per collection over data/markdown entries",
+                "Schema per Artwork: title, year, medium, images: z.array(z.object({ src: image(), alt: z.string() })).min(1).max(5), video: z.string().url().optional()",
+                "First image in the array is the Cover; src images resolve to src/assets/paintings or src/assets/ceramics"
+            ]
+        },
+        {
+            "title": "Seed placeholder content",
+            "description": "All-placeholder seed data that exercises every gallery and detail-page code path. Real content swaps in before launch.",
+            "complete": true,
+            "category": "content",
+            "steps": [
+                "Download royalty-free placeholder images in varied orientations (portrait + landscape) into src/assets/paintings and src/assets/ceramics",
+                "Ceramic A: multiple images + a real public YouTube URL -> full detail page (images + embed)",
+                "Ceramic B: multiple images, no video -> detail page, images only",
+                "Ceramic C: single image -> no detail page, non-clickable Cover",
+                "Painting A: single image, no video -> non-clickable Cover (the common case)",
+                "Painting B: multiple images -> detail page (proves a painting can get one)",
+                "Lorem-ish title/year/medium; alt text on every image"
+            ]
+        },
+        {
+            "title": "Configure Netlify deployment",
+            "description": "Wire the repo to Netlify so every push to main deploys automatically (see ADR 0001).",
+            "complete": false,
+            "category": "deployment",
+            "steps": [
+                "Add netlify.toml with build command (pnpm build) and publish directory (dist)",
+                "Connect the GitHub repo to a new Netlify site",
+                "Confirm a deploy succeeds on the empty project"
+            ]
+        },
+        {
+            "title": "Build base layout",
+            "description": "Shared HTML shell for all pages: head, meta, global token stylesheet, and a content slot.",
+            "complete": true,
+            "category": "layout",
+            "steps": [
+                "Create src/layouts/BaseLayout.astro with <html>, <head>, <body>",
+                "Accept title and description props; render <title>, meta description, and a canonical URL",
+                "Add Open Graph + twitter:card=summary_large_image tags; ogImage prop defaults to the site default OG image (TODO: point at an image in src/assets)",
+                "Add charset, viewport, and a favicon",
+                "Import the global tokens stylesheet",
+                "Include the Header and a <slot /> for page content"
+            ]
+        },
+        {
+            "title": "Build site header and nav",
+            "description": "Header with artist name/title top-left and a hamburger top-right (all viewports) that drops down the nav.",
+            "complete": true,
+            "category": "layout",
+            "steps": [
+                "Create src/components/Header.astro",
+                "Add name ('Josephine Florence') and subtitle ('Abstract Painter / Ceramicist') top-left in the display font",
+                "Add hamburger top-right on all viewports with links: About, Painting Gallery, Ceramics Gallery, Contact (no Shop)",
+                "Wire up open/close toggle (minimal <script> / small island)"
+            ]
+        },
+        {
+            "title": "Build Home page",
+            "description": "Landing page with name/title and a full-bleed two-image hero diptych.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/index.astro using BaseLayout",
+                "Two edge-to-edge images as a 50/50 diptych; object-fit: cover on a shared aspect ratio",
+                "Stack vertically (each full-width) on mobile via the breakpoint token",
+                "Hero images: loading=eager, fetchpriority=high, preloaded (they are the LCP)"
+            ]
+        },
+        {
+            "title": "Build About page",
+            "description": "Bio with a size-capped photo floated left and text wrapping around it. Not full-bleed (image quality uncertain).",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/about.astro using BaseLayout",
+                "Photo floated left (float: left), max-width: min(40%, 360px), never upscaled beyond source; bio text wraps around it with a margin",
+                "Mobile: drop the float, photo on top, centered, keep the max-width (never blow up a low-res image); lazy-loaded"
+            ]
+        },
+        {
+            "title": "Build Painting Gallery page",
+            "description": "Paintings from the collection in a two-column grid, scrolling vertically.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/paintings.astro using BaseLayout",
+                "Query the paintings collection with getCollection()",
+                "Render one Cover (images[0]) per Artwork, two per row, with <Image> (AVIF+WebP, lazy)",
+                "Wrap the Cover in a link with an icon overlay only when the Artwork has a detail page (images.length > 1 || video)",
+                "Display title, year, medium beneath each"
+            ]
+        },
+        {
+            "title": "Build Ceramics Gallery page",
+            "description": "Ceramics from the collection in a masonry-style grid.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/ceramics.astro using BaseLayout",
+                "Query the ceramics collection with getCollection()",
+                "Render one Cover (images[0]) per Artwork in a masonry/variable-height grid with <Image> (AVIF+WebP, lazy)",
+                "Wrap the Cover in a link with an icon overlay when the Artwork has a detail page (images.length > 1 || video)",
+                "Display title, year, medium on hover or below each"
+            ]
+        },
+        {
+            "title": "Build Artwork detail pages",
+            "description": "Dedicated static page per Artwork that has more to show. Data-driven, uniform across both collections.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/paintings/[slug].astro and src/pages/ceramics/[slug].astro",
+                "getStaticPaths() emits a route only for entries where images.length > 1 || video is set",
+                "Render the full image set with <Picture> and the YouTube embed when present",
+                "Pass the Artwork's Cover as the BaseLayout ogImage so sharing the page previews the piece",
+                "Show title, year, medium; leave a reserved spot for the deferred per-Artwork buy button"
+            ]
+        },
+        {
+            "title": "Build Contact page",
+            "description": "Photo on the left, form on the right, wired to Netlify Forms.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/contact.astro using BaseLayout",
+                "Photo on the left side",
+                "Static HTML form on the right (data-netlify, hidden form-name, honeypot) with Name, Email, Subject, Message, all required",
+                "Set the form action to redirect to the custom thank-you page",
+                "Keep the form as server-rendered HTML, NOT inside a client island (Netlify scans built HTML)"
+            ]
+        },
+        {
+            "title": "Build thank-you page",
+            "description": "Custom success route the contact form redirects to after submission.",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/thank-you.astro using BaseLayout",
+                "On-brand confirmation message with a link back home"
+            ]
+        },
+        {
+            "title": "Build custom 404 page",
+            "description": "On-brand not-found page (Astro serves src/pages/404.astro for unmatched static routes).",
+            "complete": true,
+            "category": "page",
+            "steps": [
+                "Create src/pages/404.astro using BaseLayout",
+                "Friendly message with links back to Home and the galleries"
+            ]
+        },
+        {
+            "deferred": true,
+            "title": "Per-Artwork buy button (e-commerce)",
+            "description": "Embeddable Stripe/Shopify-style buy button as an island on Artwork detail pages. No standalone Shop page. Operational concerns (one-of-a-kind inventory, fragile shipping, tax) are the real challenge.",
+            "complete": false,
+            "category": "ecommerce",
+            "steps": []
+        },
+        {
+            "deferred": true,
+            "title": "Self-serve admin uploads",
+            "description": "Admin page to add Artworks: magic-link auth (allowlist checked server-side), a Netlify Function validates the JWT and commits Base64-encoded images to Git (Trees API), triggering a redeploy. Cover changes stay manual. Video stays external (URL only).",
+            "complete": false,
+            "category": "admin",
+            "steps": []
+        }
+    ]
 }
