@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "astro dev",
+    "dev": "pnpm start",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "npm": "please-use-pnpm",
@@ -19,6 +22,11 @@
     "@astrojs/check": "^0.9.9",
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.4.4",
+    "sharp": "^0.34.5",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "prettier-plugin-astro": "^0.14.1"
   }
 }

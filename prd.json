@@ -39,7 +39,7 @@
     {
       "title": "Build global styles and design tokens",
       "description": "One global stylesheet of CSS custom properties, imported in BaseLayout. Almost no hardcoded values anywhere.",
-      "complete": false,
+      "complete": true,
       "category": "styling",
       "steps": [
         "Create src/styles/tokens.css with custom properties: colors, type scale, spacing, breakpoints, --font-display, --font-body",
@@ -62,7 +62,7 @@
     {
       "title": "Seed placeholder content",
       "description": "All-placeholder seed data that exercises every gallery and detail-page code path. Real content swaps in before launch.",
-      "complete": false,
+      "complete": true,
       "category": "content",
       "steps": [
         "Download royalty-free placeholder images in varied orientations (portrait + landscape) into src/assets/paintings and src/assets/ceramics",
@@ -88,7 +88,7 @@
     {
       "title": "Build base layout",
       "description": "Shared HTML shell for all pages: head, meta, global token stylesheet, and a content slot.",
-      "complete": false,
+      "complete": true,
       "category": "layout",
       "steps": [
         "Create src/layouts/BaseLayout.astro with <html>, <head>, <body>",
@@ -102,7 +102,7 @@
     {
       "title": "Build site header and nav",
       "description": "Header with artist name/title top-left and a hamburger top-right (all viewports) that drops down the nav.",
-      "complete": false,
+      "complete": true,
       "category": "layout",
       "steps": [
         "Create src/components/Header.astro",
@@ -114,7 +114,7 @@
     {
       "title": "Build Home page",
       "description": "Landing page with name/title and a full-bleed two-image hero diptych.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/index.astro using BaseLayout",
@@ -126,7 +126,7 @@
     {
       "title": "Build About page",
       "description": "Bio with a size-capped photo floated left and text wrapping around it. Not full-bleed (image quality uncertain).",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/about.astro using BaseLayout",
@@ -137,7 +137,7 @@
     {
       "title": "Build Painting Gallery page",
       "description": "Paintings from the collection in a two-column grid, scrolling vertically.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/paintings.astro using BaseLayout",
@@ -150,7 +150,7 @@
     {
       "title": "Build Ceramics Gallery page",
       "description": "Ceramics from the collection in a masonry-style grid.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/ceramics.astro using BaseLayout",
@@ -163,7 +163,7 @@
     {
       "title": "Build Artwork detail pages",
       "description": "Dedicated static page per Artwork that has more to show. Data-driven, uniform across both collections.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/paintings/[slug].astro and src/pages/ceramics/[slug].astro",
@@ -176,7 +176,7 @@
     {
       "title": "Build Contact page",
       "description": "Photo on the left, form on the right, wired to Netlify Forms.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/contact.astro using BaseLayout",
@@ -189,7 +189,7 @@
     {
       "title": "Build thank-you page",
       "description": "Custom success route the contact form redirects to after submission.",
-      "complete": false,
+      "complete": true,
       "category": "page",
       "steps": [
         "Create src/pages/thank-you.astro using BaseLayout",

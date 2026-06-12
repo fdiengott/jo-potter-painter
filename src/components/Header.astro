@@ -1,0 +1,214 @@
+---
+import { LINKS } from "../constants/constants";
+
+const links = [
+  { href: LINKS.about, label: "About" },
+  { href: LINKS.paintings, label: "Painting Gallery" },
+  { href: LINKS.ceramics, label: "Ceramics Gallery" },
+  { href: LINKS.contact, label: "Contact" },
+];
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) => pathname === href;
+---
+
+<header class="site-header">
+  <a class="brand" href={LINKS.home}>
+    <span class="brand__name">Josephine Florence</span>
+    <span class="brand__subtitle">Abstract Painter / Ceramicist</span>
+  </a>
+
+  <button
+    class="nav-toggle"
+    aria-expanded="false"
+    aria-controls="site-nav"
+    aria-label="Open menu"
+    type="button"
+  >
+    <span class="nav-toggle__bar" aria-hidden="true"></span>
+  </button>
+
+  <nav id="site-nav" class="site-nav" hidden>
+    <ul>
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const toggle = header?.querySelector<HTMLButtonElement>(".nav-toggle");
+  const nav = header?.querySelector<HTMLElement>("#site-nav");
+
+  if (header && toggle && nav) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      header.classList.toggle("is-open", open);
+      nav.hidden = !open;
+    };
+
+    const isOpen = () => toggle.getAttribute("aria-expanded") === "true";
+
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && isOpen()) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (isOpen() && !header.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    });
+  }
+</script>
+
+<style>
+  .site-header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-300);
+    padding: var(--spacing-300) var(--spacing-gutter);
+  }
+
+  .brand {
+    display: grid;
+    gap: var(--spacing-50);
+    text-decoration: none;
+    line-height: var(--line-height-200);
+  }
+
+  .brand__name {
+    font-family: var(--font-display);
+    font-size: var(--font-size-600);
+  }
+
+  .brand__subtitle {
+    font-size: var(--font-size-300);
+    color: var(--color-ink-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-500);
+  }
+
+  .nav-toggle {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    border-radius: var(--radius-300);
+    transition: background-color var(--transition-duration) ease;
+    &:hover,
+    .is-open & {
+      background-color: hsl(from var(--color-bg) h s calc(l - 10));
+    }
+  }
+
+  .nav-toggle__bar,
+  .nav-toggle__bar::before,
+  .nav-toggle__bar::after {
+    content: "";
+    display: block;
+    width: 1.5rem;
+    height: 2px;
+    background: var(--color-ink);
+    transition:
+      transform var(--transition-duration) ease,
+      opacity var(--transition-duration) ease,
+      background-color var(--transition-duration) ease;
+  }
+
+  .nav-toggle__bar::before,
+  .nav-toggle__bar::after {
+    position: absolute;
+    inset-inline-start: 0;
+  }
+
+  .nav-toggle__bar {
+    position: relative;
+  }
+
+  .nav-toggle__bar::before {
+    inset-block-start: -6px;
+  }
+
+  .nav-toggle__bar::after {
+    inset-block-start: 6px;
+  }
+
+  .site-header.is-open .nav-toggle__bar {
+    background: transparent;
+  }
+
+  .site-header.is-open .nav-toggle__bar::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .site-header.is-open .nav-toggle__bar::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .site-nav {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-end: var(--spacing-gutter);
+    z-index: 10;
+    min-width: 14rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-400);
+    box-shadow: var(--box-shadow-400);
+  }
+
+  .site-nav[hidden] {
+    display: none;
+  }
+
+  .site-nav ul {
+    margin: 0;
+    padding: var(--spacing-100);
+    list-style: none;
+  }
+
+  .site-nav a {
+    display: block;
+    padding: var(--spacing-200) var(--spacing-300);
+    text-decoration: none;
+    border-radius: var(--radius-300);
+
+    /*
+    * what if instead of an outline a paint splotch slides in from the side?
+    */
+    &:hover {
+      outline: 1px solid var(--color-accent);
+    }
+  }
+
+  .site-nav a[aria-current="page"] {
+    color: var(--color-accent);
+    font-weight: var(--font-weight-500);
+  }
+</style>

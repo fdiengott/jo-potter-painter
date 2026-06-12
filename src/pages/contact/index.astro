@@ -1,0 +1,139 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import portrait from "../../assets/rubber-duck.jpg";
+---
+
+<BaseLayout title="Contact">
+  <main class="contact">
+    <h1>Contact</h1>
+    <div class="contact__grid">
+      <Image
+        class="contact__photo"
+        src={portrait}
+        alt="portrait of Josephine Florence"
+        widths={[480, 960]}
+        sizes="(min-width: 48em) 40vw, 100vw"
+        loading="lazy"
+      />
+
+      <form
+        class="contact__form"
+        name="contact"
+        method="POST"
+        action="/thank-you"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <p hidden>
+          <label>
+            Don't fill this out if you're human: <input name="bot-field" />
+          </label>
+        </p>
+
+        <p class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required />
+        </p>
+        <p class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </p>
+        <p class="field">
+          <label for="subject">Subject</label>
+          <input id="subject" name="subject" type="text" required />
+        </p>
+        <p class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </p>
+
+        <button type="submit">Send message</button>
+      </form>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .contact {
+    max-width: var(--content-max-width);
+    margin-inline: auto;
+    padding: var(--spacing-500) var(--spacing-gutter);
+  }
+
+  h1 {
+    margin-block-end: var(--spacing-500);
+  }
+
+  .contact__grid {
+    display: grid;
+    gap: var(--spacing-500);
+  }
+
+  .contact__photo {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-400);
+    background: var(--color-border);
+  }
+
+  .contact__form {
+    display: grid;
+    gap: var(--spacing-400);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--spacing-100);
+    margin: 0;
+  }
+
+  label {
+    font-size: var(--font-size-300);
+    color: var(--color-ink-muted);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: var(--spacing-200);
+    font: inherit;
+    color: inherit;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-300);
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button {
+    justify-self: start;
+    padding: var(--spacing-200) var(--spacing-500);
+    font: inherit;
+    color: var(--color-surface);
+    background: var(--color-accent);
+    border: 0;
+    border-radius: var(--radius-300);
+    cursor: pointer;
+  }
+
+  @media (min-width: 48em) {
+    .contact__grid {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+    }
+
+    .contact__form {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .contact__photo {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+</style>
