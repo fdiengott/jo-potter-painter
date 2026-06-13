@@ -1,7 +1,7 @@
 import type { Config, Context } from "@netlify/functions"
 import { SignJWT } from "jose"
 import { parseEmail } from "../../src/utils/emailParser"
-import { sendMagicLinkEmail } from "../lib/emailClient"
+import { sendMagicLinkEmail } from "../lib/sendMagicLinkEmail"
 
 const FALLBACK_SITE_URL = "http://localhost:8888"
 const TOKEN_TTL = "15m"
@@ -9,7 +9,6 @@ const secret = process.env.JO_CERAMIC_PAINTER_JWT_SECRET
 const allowListRaw = process.env.ADMIN_ALLOW_LIST
 
 export default async (req: Request, _context: Context) => {
-    console.log("in magic link server")
     if (req.method !== "POST") {
         return toResponse(405, { message: "Method not allowed" })
     }
@@ -42,7 +41,11 @@ export default async (req: Request, _context: Context) => {
 
     const magicLink = await generateMagicLink(email)
 
-    await sendMagicLinkEmail(email, magicLink)
+    try {
+        await sendMagicLinkEmail(email, magicLink)
+    } catch (err) {
+        return toResponse(500, { message: `Failed to send magic link. ${err}` })
+    }
 
     return genericOk
 }

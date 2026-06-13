@@ -19,7 +19,7 @@ export const MagicLink = () => {
         } catch (e) {
             setWasSubmitSuccessful(false)
         } finally {
-            setHasSubmitted(false)
+            setHasSubmitted(true)
             setIsSubmitting(false)
         }
     }
