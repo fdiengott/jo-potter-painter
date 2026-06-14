@@ -37,13 +37,14 @@ Easy wins only — Jo isn't active on social, so no heavy investment.
 
 - Content modeled as a collection from day one (images + metadata entries)
 - Phase 1: manual uploads
-- Phase 2: self-serve admin page → serverless function → Git commit → deploy (see ADR 0003 for the full design)
+- Phase 2: self-serve admin page → serverless function → Git commit → deploy (see ADR 0003 for the trust/auth design and ADR 0004 for the batch upload flow)
     - Auth: magic link; allowlist checked server-side before any email is sent
     - Security boundary: serverless function validates JWT (not the browser island)
     - Binaries: Base64-encoded; unique filenames to stay append-only
-    - UX: batch-stage in browser → single publish → one commit (Trees API, deferred)
-    - Cover is set by image order in the admin (no separate cover field)
-    - **Status:** auth/request half built — `/admin` island (`AdminIsland` → `MagicLink`/`MultiImageForm`) + the `request-magic-link` Function signing the JWT (email delivery still mocked). The publish/commit Function (JWT verify + Trees API) is not yet built.
+    - UX: a **batch** of Artworks (each with multiple images) staged in the browser → single publish → **one atomic commit → one build**. Decoupled transport: each image uploads to a GitHub **blob** via a JWT-verified Function (no build); "Publish all" assembles one tree → one commit → one ref update (the only build trigger), so batch size never hits Netlify's ~6MB per-request limit. Create-only — no edit/delete of published Artworks.
+    - Form is master/detail: a batch list (Cover thumbnails + Publish) and a single Artwork form (collection toggle, title, year pre-filled current, optional medium for paintings only, optional video URL, optional description written as the Markdown body, 1–5 images with required alt, up/down ordering, slot 1 = Cover). The form has no Publish button (exits via Add-to-batch / Save / Discard); Publish sits behind an image-free confirm modal.
+    - Images downscaled client-side to a ~2560px master before Base64; Cover is set by image order in the admin (no separate cover field)
+    - **Status:** auth/request half built — `/admin` island (`AdminIsland` → `MagicLink`/`MultiImageForm`) + the `request-magic-link` Function signing the JWT (email delivery still mocked). The blob-staging and publish/commit Functions (JWT verify + Trees API) are not yet built.
 
 ### E-commerce (deferred)
 

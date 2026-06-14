@@ -230,15 +230,19 @@
         },
         {
             "deferred": true,
-            "title": "Admin upload + publish function",
-            "description": "The publish Netlify Function: verify the JWT (same secret), assign unique append-only filenames, and commit Base64-encoded images plus the content entry as one atomic commit via the GitHub Trees API, triggering a redeploy. Cover is set by image order in the admin (no separate cover field); video stays external (URL only). See ADR 0003.",
+            "title": "Admin batch upload + publish function",
+            "description": "Stage a batch of Artworks (each with multiple images) in the browser and publish them as one atomic commit -> one Netlify build. Byte-transport is decoupled from the commit: each image uploads to a GitHub blob via a JWT-verified Function (no build); 'Publish all' assembles one tree -> one commit -> one ref update (the only build trigger), so batch size never hits Netlify's ~6MB per-request limit. Create-only: no edit/delete of published Artworks. Cover is set by image order (no separate cover field); video stays external (URL only). See ADR 0004 (refines ADR 0003).",
             "complete": false,
             "category": "admin",
             "steps": [
-                "MultiImageForm: stage 1-5 images + metadata (title, year, medium, collection, per-image alt) and order images (images[0] = Cover)",
-                "Resize/compress images client-side before Base64 to stay under the ~6MB Function body limit",
-                "publish Function verifies the JWT, generates unique filenames, and builds one commit (image blobs + entry) via the GitHub Trees API",
-                "Entry written to src/content/<collection>/<slug>.md with images[].src pointing at ../../assets/..."
+                "Restructure src/types/images.ts: ImageData is wrong-shaped (metadata per image). Model the Artwork shape - collection + Artwork metadata + an ordered images: { blobSha, alt }[].",
+                "Schema drift in src/content.config.ts: remove medium from the ceramics schema; make medium optional on the paintings schema. Guard galleries/detail pages to render medium only when present (existing ceramic seed entries' medium frontmatter becomes ignored).",
+                "Master/detail UI (reconcile the MultiImageForm vs stub-MultiImageFormWrapper divergence into one shape): a batch list (Cover thumbnails + title, each selectable for in-place edit) with the Publish button, and a single Artwork form. Each staged Artwork carries a stable client-side id.",
+                "Artwork form: required Painting|Ceramic toggle, title, year (pre-filled current, editable), optional medium (paintings only - hidden for ceramics), optional video URL, optional description (free text), 1-5 images with required non-empty alt, up/down ordering, slot 1 = Cover with a distinct visual treatment. Block publish until valid. No Publish button on the form - it exits via Add-to-batch / Save changes / Discard.",
+                "Downscale images client-side to a ~2560px master (high-quality re-encode) before Base64, so each blob request stays well under the ~6MB Function body limit and astro:assets gets a crisp master.",
+                "Blob-staging Function (replaces /submit-images): POST-only, verifies the JWT, creates one GitHub blob per image, returns the SHA. Removing/discarding a staged image just drops its SHA client-side (orphan blobs are unreachable and GC'd).",
+                "Publish Function: verifies the JWT, generates unique append-only filenames, assembles one tree (all staged blob SHAs + all entries) -> one commit -> one ref update via the GitHub git-data/Trees API. Publish sits behind an image-free confirm modal summarising each Artwork (title, photo count, Cover alt, has-video).",
+                "Each entry written to src/content/<collection>/<slug>.md: frontmatter (title, year, optional medium, images[].src pointing at ../../assets/<collection>/..., optional video) followed by the optional description as the Markdown body below the closing ---."
             ]
         }
     ]
