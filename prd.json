@@ -1,209 +1,22 @@
 {
     "tasks": [
         {
-            "title": "Initialize Astro project",
-            "description": "Scaffold the Astro app on top of the existing package.json (astro dep + scripts already present). pnpm only.",
-            "complete": true,
-            "category": "setup",
+            "title": "Admin page + magic-link auth",
+            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. /admin excluded from robots.txt and the sitemap. Auth/request half built (see plan.md status); email delivery still mocked. See ADR 0003.",
+            "complete": false,
+            "category": "admin",
             "steps": [
-                "Scaffold src structure with the empty Astro template (pnpm, not npm) without clobbering the existing package.json/lockfile",
-                "Set pnpm-workspace.yaml allowBuilds: sharp: true (required by astro:assets) and esbuild: true",
-                "Verify the dev server runs with `pnpm start`"
+                "Remaining: replace the mock email client (netlify/lib) with a real transactional provider."
             ]
         },
         {
-            "title": "Set up project folder structure",
-            "description": "Establish the directory layout. Source images live in src/ so astro:assets can optimize them; public/ holds only static-path assets.",
-            "complete": true,
-            "category": "setup",
+            "deferred": true,
+            "title": "Admin batch upload + publish function",
+            "description": "Stage a batch of Artworks in the browser and publish them as one atomic commit -> one Netlify build, via incremental GitHub blobs + a single tree/commit/ref-update. Create-only. Full design (master/detail UI, form fields, schema drift, image prep, orphan-blob handling, publish speedbump) in ADR 0004 (refines ADR 0003).",
+            "complete": false,
+            "category": "admin",
             "steps": [
-                "Create src/pages, src/layouts, src/components, src/content, src/styles",
-                "Create src/assets/paintings and src/assets/ceramics for optimizable source images",
-                "Reserve public/ for favicon, OG image, and anything that must keep an exact path",
-                "Add .gitignore entries for node_modules, dist, .env"
-            ]
-        },
-        {
-            "title": "Configure Astro",
-            "description": "Set up astro.config.mjs. Image optimization is built into astro:assets (no integration to add).",
-            "complete": true,
-            "category": "config",
-            "steps": [
-                "Set output to 'static'",
-                "Set the production site URL (required by sitemap and canonical URLs)",
-                "Add the @astrojs/sitemap integration",
-                "Add a robots.txt (in public/) pointing to sitemap.xml",
-                "Confirm astro:assets image optimization works (sharp available)"
-            ]
-        },
-        {
-            "title": "Build global styles and design tokens",
-            "description": "One global stylesheet of CSS custom properties, imported in BaseLayout. Almost no hardcoded values anywhere.",
-            "complete": true,
-            "category": "styling",
-            "steps": [
-                "Create src/styles/tokens.css with custom properties: colors, type scale, spacing, breakpoints, --font-display, --font-body",
-                "Self-host fonts: add .woff2 files, @font-face with font-display: swap, preload the display face",
-                "Use scoped <style> per component; reference tokens, do not hardcode values"
-            ]
-        },
-        {
-            "title": "Set up content collections (Content Layer API)",
-            "description": "Model paintings and ceramics as Astro content collections (Astro 6 Content Layer API) so pages map over them at build time.",
-            "complete": true,
-            "category": "content",
-            "steps": [
-                "Create src/content.config.ts (root of src/, not inside src/content)",
-                "Define a glob loader per collection over data/markdown entries",
-                "Schema per Artwork: title, year, medium, images: z.array(z.object({ src: image(), alt: z.string() })).min(1).max(5), video: z.string().url().optional()",
-                "First image in the array is the Cover; src images resolve to src/assets/paintings or src/assets/ceramics"
-            ]
-        },
-        {
-            "title": "Seed placeholder content",
-            "description": "All-placeholder seed data that exercises every gallery and detail-page code path. Real content swaps in before launch.",
-            "complete": true,
-            "category": "content",
-            "steps": [
-                "Download royalty-free placeholder images in varied orientations (portrait + landscape) into src/assets/paintings and src/assets/ceramics",
-                "Ceramic A: multiple images + a real public YouTube URL -> full detail page (images + embed)",
-                "Ceramic B: multiple images, no video -> detail page, images only",
-                "Ceramic C: single image -> no detail page, non-clickable Cover",
-                "Painting A: single image, no video -> non-clickable Cover (the common case)",
-                "Painting B: multiple images -> detail page (proves a painting can get one)",
-                "Lorem-ish title/year/medium; alt text on every image"
-            ]
-        },
-        {
-            "title": "Configure Netlify deployment",
-            "description": "Wire the repo to Netlify so every push to main deploys automatically (see ADR 0001).",
-            "complete": true,
-            "category": "deployment",
-            "steps": [
-                "Add netlify.toml with build command (pnpm build) and publish directory (dist)",
-                "Connect the GitHub repo to a new Netlify site",
-                "Confirm a deploy succeeds on the empty project"
-            ]
-        },
-        {
-            "title": "Build base layout",
-            "description": "Shared HTML shell for all pages: head, meta, global token stylesheet, and a content slot.",
-            "complete": true,
-            "category": "layout",
-            "steps": [
-                "Create src/layouts/BaseLayout.astro with <html>, <head>, <body>",
-                "Accept title and description props; render <title>, meta description, and a canonical URL",
-                "Add Open Graph + twitter:card=summary_large_image tags; ogImage prop defaults to the site default OG image (TODO: point at an image in src/assets)",
-                "Add charset, viewport, and a favicon",
-                "Import the global tokens stylesheet",
-                "Include the Header and a <slot /> for page content"
-            ]
-        },
-        {
-            "title": "Build site header and nav",
-            "description": "Header with artist name/title top-left and a hamburger top-right (all viewports) that drops down the nav.",
-            "complete": true,
-            "category": "layout",
-            "steps": [
-                "Create src/components/Header.astro",
-                "Add name ('Josephine Florence') and subtitle ('Abstract Painter / Ceramicist') top-left in the display font",
-                "Add hamburger top-right on all viewports with links: About, Painting Gallery, Ceramics Gallery, Contact (no Shop)",
-                "Wire up open/close toggle (minimal <script> / small island)"
-            ]
-        },
-        {
-            "title": "Build Home page",
-            "description": "Landing page with name/title and a full-bleed two-image hero diptych.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/index.astro using BaseLayout",
-                "Two edge-to-edge images as a 50/50 diptych; object-fit: cover on a shared aspect ratio",
-                "Stack vertically (each full-width) on mobile via the breakpoint token",
-                "Hero images: loading=eager, fetchpriority=high, preloaded (they are the LCP)"
-            ]
-        },
-        {
-            "title": "Build About page",
-            "description": "Bio with a size-capped photo floated left and text wrapping around it. Not full-bleed (image quality uncertain).",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/about.astro using BaseLayout",
-                "Photo floated left (float: left), max-width: min(40%, 360px), never upscaled beyond source; bio text wraps around it with a margin",
-                "Mobile: drop the float, photo on top, centered, keep the max-width (never blow up a low-res image); lazy-loaded"
-            ]
-        },
-        {
-            "title": "Build Painting Gallery page",
-            "description": "Paintings from the collection in a two-column grid, scrolling vertically.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/paintings.astro using BaseLayout",
-                "Query the paintings collection with getCollection()",
-                "Render one Cover (images[0]) per Artwork, two per row, with <Image> (AVIF+WebP, lazy)",
-                "Wrap the Cover in a link with an icon overlay only when the Artwork has a detail page (images.length > 1 || video)",
-                "Display title, year, medium beneath each"
-            ]
-        },
-        {
-            "title": "Build Ceramics Gallery page",
-            "description": "Ceramics from the collection in a masonry-style grid.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/ceramics.astro using BaseLayout",
-                "Query the ceramics collection with getCollection()",
-                "Render one Cover (images[0]) per Artwork in a masonry/variable-height grid with <Image> (AVIF+WebP, lazy)",
-                "Wrap the Cover in a link with an icon overlay when the Artwork has a detail page (images.length > 1 || video)",
-                "Display title, year, medium on hover or below each"
-            ]
-        },
-        {
-            "title": "Build Artwork detail pages",
-            "description": "Dedicated static page per Artwork that has more to show. Data-driven, uniform across both collections.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/paintings/[slug].astro and src/pages/ceramics/[slug].astro",
-                "getStaticPaths() emits a route only for entries where images.length > 1 || video is set",
-                "Render the full image set with <Picture> and the YouTube embed when present",
-                "Pass the Artwork's Cover as the BaseLayout ogImage so sharing the page previews the piece",
-                "Show title, year, medium; leave a reserved spot for the deferred per-Artwork buy button"
-            ]
-        },
-        {
-            "title": "Build Contact page",
-            "description": "Photo on the left, form on the right, wired to Netlify Forms.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/contact.astro using BaseLayout",
-                "Photo on the left side",
-                "Static HTML form on the right (data-netlify, hidden form-name, honeypot) with Name, Email, Subject, Message, all required",
-                "Set the form action to redirect to the custom thank-you page",
-                "Keep the form as server-rendered HTML, NOT inside a client island (Netlify scans built HTML)"
-            ]
-        },
-        {
-            "title": "Build thank-you page",
-            "description": "Custom success route the contact form redirects to after submission.",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/thank-you.astro using BaseLayout",
-                "On-brand confirmation message with a link back home"
-            ]
-        },
-        {
-            "title": "Build custom 404 page",
-            "description": "On-brand not-found page (Astro serves src/pages/404.astro for unmatched static routes).",
-            "complete": true,
-            "category": "page",
-            "steps": [
-                "Create src/pages/404.astro using BaseLayout",
-                "Friendly message with links back to Home and the galleries"
+                "Build per ADR 0004. Notable sub-tasks: restructure src/types/images.ts to the Artwork shape; schema drift in src/content.config.ts (drop medium from ceramics, optional on paintings) + render medium only when present in galleries/detail; master/detail form reconciling the MultiImageForm vs stub-MultiImageFormWrapper divergence; JWT-verified blob-staging Function + publish (tree/commit/ref) Function."
             ]
         },
         {
@@ -213,37 +26,6 @@
             "complete": false,
             "category": "ecommerce",
             "steps": []
-        },
-        {
-            "title": "Admin page + magic-link auth",
-            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. Email delivery is still mocked (console). /admin is excluded from robots.txt and the sitemap. See ADR 0003.",
-            "complete": false,
-            "category": "admin",
-            "steps": [
-                "src/pages/admin.astro mounts AdminIsland with client:only=react; the island branches on a ?token= query param (MagicLink form vs MultiImageForm) — presence drives display only, validity is enforced server-side",
-                "MagicLink form POSTs to /request-magic-link; MagicLinkSubmitted renders success/error states (CSS modules + design tokens)",
-                "netlify/functions/requestMagicLink.ts: POST-only, env + JSON-parse + allowlist guards, signs HS256 JWT (sub=email, 15m), returns a generic 200 to avoid allowlist enumeration",
-                "Set project to ESM (type: module) so the function bundles as .mjs and can import jose; added jose dependency",
-                "Exclude /admin from robots.txt (Disallow) and the sitemap (filter in astro.config.mjs)",
-                "TODO: replace the mock email client (netlify/lib/emailClient.ts) with a real transactional provider"
-            ]
-        },
-        {
-            "deferred": true,
-            "title": "Admin batch upload + publish function",
-            "description": "Stage a batch of Artworks (each with multiple images) in the browser and publish them as one atomic commit -> one Netlify build. Byte-transport is decoupled from the commit: each image uploads to a GitHub blob via a JWT-verified Function (no build); 'Publish all' assembles one tree -> one commit -> one ref update (the only build trigger), so batch size never hits Netlify's ~6MB per-request limit. Create-only: no edit/delete of published Artworks. Cover is set by image order (no separate cover field); video stays external (URL only). See ADR 0004 (refines ADR 0003).",
-            "complete": false,
-            "category": "admin",
-            "steps": [
-                "Restructure src/types/images.ts: ImageData is wrong-shaped (metadata per image). Model the Artwork shape - collection + Artwork metadata + an ordered images: { blobSha, alt }[].",
-                "Schema drift in src/content.config.ts: remove medium from the ceramics schema; make medium optional on the paintings schema. Guard galleries/detail pages to render medium only when present (existing ceramic seed entries' medium frontmatter becomes ignored).",
-                "Master/detail UI (reconcile the MultiImageForm vs stub-MultiImageFormWrapper divergence into one shape): a batch list (Cover thumbnails + title, each selectable for in-place edit) with the Publish button, and a single Artwork form. Each staged Artwork carries a stable client-side id.",
-                "Artwork form: required Painting|Ceramic toggle, title, year (pre-filled current, editable), optional medium (paintings only - hidden for ceramics), optional video URL, optional description (free text), 1-5 images with required non-empty alt, up/down ordering, slot 1 = Cover with a distinct visual treatment. Block publish until valid. No Publish button on the form - it exits via Add-to-batch / Save changes / Discard.",
-                "Downscale images client-side to a ~2560px master (high-quality re-encode) before Base64, so each blob request stays well under the ~6MB Function body limit and astro:assets gets a crisp master.",
-                "Blob-staging Function (replaces /submit-images): POST-only, verifies the JWT, creates one GitHub blob per image, returns the SHA. Removing/discarding a staged image just drops its SHA client-side (orphan blobs are unreachable and GC'd).",
-                "Publish Function: verifies the JWT, generates unique append-only filenames, assembles one tree (all staged blob SHAs + all entries) -> one commit -> one ref update via the GitHub git-data/Trees API. Publish sits behind an image-free confirm modal summarising each Artwork (title, photo count, Cover alt, has-video).",
-                "Each entry written to src/content/<collection>/<slug>.md: frontmatter (title, year, optional medium, images[].src pointing at ../../assets/<collection>/..., optional video) followed by the optional description as the Markdown body below the closing ---."
-            ]
         }
     ]
 }
