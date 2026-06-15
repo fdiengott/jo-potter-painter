@@ -11,14 +11,24 @@ interface Props {
     href?: string
     loading?: "lazy" | "eager"
     sizes?: string
+    transitionName?: string
 }
 
-const { cover, alt, title, year, medium, href, loading = "lazy", sizes = "(min-width: 40em) 50vw, 100vw" } = Astro.props
+const {
+    cover,
+    alt,
+    title,
+    year,
+    medium,
+    href,
+    loading = "lazy",
+    sizes = "(min-width: 40em) 50vw, 100vw",
+    transitionName,
+} = Astro.props
 ---
 
 <figure class="card">
     <div class="card__media">
-        <!-- TODO: make this view transition to details page-->
         <Picture
             src={cover}
             formats={["avif", "webp"]}
@@ -26,6 +36,7 @@ const { cover, alt, title, year, medium, href, loading = "lazy", sizes = "(min-w
             widths={[400, 800, 1200]}
             sizes={sizes}
             loading={loading}
+            style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
         />
         {
             href && (
