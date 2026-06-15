@@ -1,6 +1,7 @@
 ---
 import { Picture } from "astro:assets"
 import type { CollectionEntry } from "astro:content"
+import { coverTransitionName } from "../utils/coverTransitionName"
 
 interface Props {
     artwork: CollectionEntry<"paintings"> | CollectionEntry<"ceramics">
@@ -8,6 +9,8 @@ interface Props {
 
 const { artwork } = Astro.props
 const { title, year, medium, images, video } = artwork.data
+
+const coverName = coverTransitionName(artwork.collection, artwork.id)
 
 function youtubeEmbed(url: string): string | null {
     try {
@@ -42,6 +45,7 @@ const embedUrl = video ? youtubeEmbed(video) : null
                         widths={[400, 800, 1200, 1600]}
                         sizes="(min-width: 72rem) 72rem, 100vw"
                         loading={i === 0 ? "eager" : "lazy"}
+                        style={i === 0 ? `view-transition-name: ${coverName}` : undefined}
                     />
                 </li>
             ))
