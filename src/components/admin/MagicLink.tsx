@@ -1,6 +1,9 @@
 import { useState, type SubmitEventHandler } from "react"
 import { MagicLinkSubmitted } from "./MagicLinkSubmitted"
 import styles from "./MagicLink.module.css"
+import { createContextualLogger } from "../../utils/createContextualLogger"
+
+const logger = createContextualLogger("MagicLink")
 
 export const MagicLink = () => {
     const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -15,8 +18,9 @@ export const MagicLink = () => {
 
             setWasSubmitSuccessful(res.ok)
 
-            if (!res.ok) console.error("Magic link request unsuccussful", await res.json())
+            if (!res.ok) throw new Error(await res.json())
         } catch (e) {
+            logger.error("Magic link request unsuccussful", e)
             setWasSubmitSuccessful(false)
         } finally {
             setHasSubmitted(true)

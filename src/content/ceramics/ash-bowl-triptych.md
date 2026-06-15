@@ -1,7 +1,6 @@
 ---
 title: "Ash Bowl Triptych"
 year: 2022
-medium: "Raku-fired earthenware"
 images:
     - src: ../../assets/rubber-duck.jpg
       alt: "Placeholder image (rubber duck) — Ash Bowl Triptych, the three bowls together"

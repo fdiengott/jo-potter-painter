@@ -1,8 +1,7 @@
 ---
 title: "Tidal Vessel No. 3"
 year: 2023
-medium: "Glazed stoneware"
-video: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+videoSrc: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 images:
     - src: ../../assets/rubber-duck.jpg
       alt: "Placeholder image (rubber duck) — Tidal Vessel No. 3, front view"

@@ -23,7 +23,6 @@ const ceramics = (await getCollection("ceramics")).sort((a, b) => b.data.year - 
                                 alt={cover.alt}
                                 title={artwork.data.title}
                                 year={artwork.data.year}
-                                medium={artwork.data.medium}
                                 href={hasDetailPage ? `${LINKS.ceramics}/${artwork.id}` : undefined}
                                 sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
                                 transitionName={

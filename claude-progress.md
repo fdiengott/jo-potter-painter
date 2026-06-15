@@ -195,3 +195,18 @@ Started Phase 2 — the auth/request half of the self-serve admin. The publish/c
 - Infra: added **`"type": "module"`** to `package.json` so the function bundles as ESM (`.mjs`) and can import the ESM-only `jose` (added as a dep) — fixes the `require()` of an ES module error. Excluded `/admin` from **`robots.txt`** (`Disallow`) and the **sitemap** (`filter` in `astro.config.mjs`).
 
 Caveat: email delivery is mocked — paste the link printed in the `netlify dev` console into the browser to test the token branch.
+
+## Real magic-link email + start of the batch-upload Function (2026-06-15)
+
+Closed out the magic-link auth task (real email now sends) and began the ADR 0004 batch-upload feature — the per-image transport half is built; the publish/commit half is still a stub.
+
+- **Real email:** the mock `netlify/lib/emailClient.ts` was replaced by **`netlify/lib/sendMagicLinkEmail.ts`** (Resend). Needs `EMAIL_API_KEY` and `EMAIL_DOMAIN_ORIGIN` set in Netlify plus a verified Resend sending domain. This completes "Admin page + magic-link auth" (now `complete` in `prd.json`).
+- **Blob-staging Function** — **`netlify/functions/stageImage.ts`** (`config.path = /stage-image`): verifies the JWT, then `POST`s one Base64 image to the GitHub `git/blobs` API (with `GITHUB_REPO` / `GITHUB_TOKEN`) and returns the blob `sha`. This is ADR 0004's decoupled per-image transport — a blob is referenced by nothing, so it creates **no commit and no build**.
+- **Shared `netlify/lib/` helpers** extracted/added: `toRequest.ts` (`toResponse`), `isOnAllowList.ts` (parses `ADMIN_ALLOW_LIST`), `verifyToken.ts` (jose `jwtVerify` + exp/sub checks + allowlist), `parseStageImageRequest.ts`. `requestMagicLink.ts` was refactored onto the shared `toResponse` + `isOnAllowList` (its private copies removed).
+- **`src/utils/createContextualLogger.ts`** — a tiny prefixed `console` logger (`[context] …`), adopted across the Functions and the `MagicLink` / `MultiImageForm` islands.
+- **Type restructure** to the Artwork shape (ADR 0004): `src/types/imageData.ts` — `ImageData` is now per-Artwork (`type: "ceramic" | "painting"`, title, year, optional medium, `images: { alt, blobSha }[]`, optional `videoSrc`/`description`), no longer per-image — plus `src/types/parsed.ts` (`Parsed<T>` discriminated union) and `src/types/stageImageRequest.ts`.
+- **Schema drift landed** (ADR 0004): `src/content.config.ts` drops `medium` from ceramics and makes it optional on paintings. The three ceramic seed entries drop their `medium` frontmatter, `ArtworkCard.astro` renders `· {medium}` only when present, and `ceramics/index.astro` stops passing it.
+- **Admin scaffold:** deleted `ImageFormSubmitted.tsx`; added `ImagePreview.tsx`, `MultiImageFormSuccess.tsx`, `MultiImageFormFailure.tsx`, the shared `MultiImageFormSubmitted.module.css`, and a stub `SubmitImageForm.tsx`. `MultiImageForm.tsx` now accumulates an `ImageData[]` batch, posts it to `/submit-images`, and renders success/failure screens.
+- **`scripts/mintJwt.js`** — dev helper that mints a 15-minute HS256 token (subject = an allowlisted email) for local Function testing.
+
+Still to build (the publish path doesn't work end-to-end yet): **`netlify/functions/submitImages.ts`** is an empty stub — the Trees → commit → ref-update that turns staged blobs into one atomic commit/build isn't written. `SubmitImageForm` has no fields, and there's no client-side ~2560px downscaling, batch list-edit/reorder, or image-free publish confirm modal.

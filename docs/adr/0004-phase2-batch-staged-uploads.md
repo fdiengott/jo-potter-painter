@@ -85,10 +85,11 @@ defined, precisely so they could diverge) to actually diverge:
   unique append-only filenames, external-URL-only video, and Trees-API-over-Contents-API
   reasoning all still hold.
 - Two server endpoints, both JWT-verified on every call: a per-image **blob-staging**
-  Function and a **publish** (tree → commit → ref) Function. The current half-built
-  `/submit-images` POST and the `MultiImageForm` / stub-`MultiImageFormWrapper`
-  divergence get reconciled into this shape.
-- `src/types/images.ts` (`ImageData`, which today wrongly puts title/year/medium/video on
+  Function and a **publish** (tree → commit → ref) Function. As built, the blob-staging
+  Function landed first as `netlify/functions/stageImage.ts` (`/stage-image` → GitHub
+  `git/blobs`); the publish Function `netlify/functions/submitImages.ts` (`/submit-images`)
+  is still a stub. `MultiImageForm` was reworked to accumulate the batch and post to it.
+- `src/types/imageData.ts` (`ImageData`, which previously put title/year/medium/video on
   every *image*) is restructured to the Artwork shape: collection + Artwork metadata +
   an ordered `images: { blobSha, alt }[]`.
 - `src/content.config.ts` changes (ceramics `medium` removed; paintings `medium`

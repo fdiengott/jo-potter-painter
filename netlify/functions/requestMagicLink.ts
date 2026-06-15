@@ -2,6 +2,8 @@ import type { Config, Context } from "@netlify/functions"
 import { SignJWT } from "jose"
 import { parseEmail } from "../../src/utils/emailParser"
 import { sendMagicLinkEmail } from "../lib/sendMagicLinkEmail"
+import { toResponse } from "../lib/toRequest"
+import { isOnAllowList } from "../lib/isOnAllowList"
 
 const FALLBACK_SITE_URL = "http://localhost:8888"
 const TOKEN_TTL = "15m"
@@ -31,13 +33,11 @@ export default async (req: Request, _context: Context) => {
 
     const email = String(parsed.payload).trim().toLowerCase()
 
-    const allowList = parseAllowList(allowListRaw)
-
     const genericOk = toResponse(200, {
         message: "If that address is authorized, a magic link is on its way.",
     })
 
-    if (!allowList.includes(email)) return genericOk
+    if (!isOnAllowList(email)) return genericOk
 
     const magicLink = await generateMagicLink(email)
 
@@ -49,15 +49,6 @@ export default async (req: Request, _context: Context) => {
 
     return genericOk
 }
-
-const toResponse = (status: number, body: Record<string, unknown>) =>
-    new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } })
-
-const parseAllowList = (allowListRaw: string): string[] =>
-    allowListRaw
-        .split(",")
-        .map((entry) => entry.trim().toLowerCase())
-        .filter(Boolean)
 
 const generateMagicLink = async (email: string) => {
     const token = await generateToken(email)

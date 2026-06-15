@@ -2,21 +2,19 @@
     "tasks": [
         {
             "title": "Admin page + magic-link auth",
-            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. /admin excluded from robots.txt and the sitemap. Auth/request half built (see plan.md status); email delivery still mocked. See ADR 0003.",
-            "complete": false,
+            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. /admin excluded from robots.txt and the sitemap. Auth/request half built (see plan.md status); magic-link email delivered via Resend (netlify/lib/sendMagicLinkEmail.ts). See ADR 0003.",
+            "complete": true,
             "category": "admin",
-            "steps": [
-                "Remaining: replace the mock email client (netlify/lib) with a real transactional provider."
-            ]
+            "steps": []
         },
         {
-            "deferred": true,
             "title": "Admin batch upload + publish function",
             "description": "Stage a batch of Artworks in the browser and publish them as one atomic commit -> one Netlify build, via incremental GitHub blobs + a single tree/commit/ref-update. Create-only. Full design (master/detail UI, form fields, schema drift, image prep, orphan-blob handling, publish speedbump) in ADR 0004 (refines ADR 0003).",
             "complete": false,
             "category": "admin",
             "steps": [
-                "Build per ADR 0004. Notable sub-tasks: restructure src/types/images.ts to the Artwork shape; schema drift in src/content.config.ts (drop medium from ceramics, optional on paintings) + render medium only when present in galleries/detail; master/detail form reconciling the MultiImageForm vs stub-MultiImageFormWrapper divergence; JWT-verified blob-staging Function + publish (tree/commit/ref) Function."
+                "Done: schema drift (ceramics drop medium, paintings optional); Artwork-shaped types (imageData/parsed/stageImageRequest); JWT-verified blob-staging Function (/stage-image -> GitHub git/blobs); shared netlify/lib helpers (toResponse, isOnAllowList, verifyToken, parseStageImageRequest); createContextualLogger; admin component scaffold (ImagePreview, MultiImageForm success/failure, SubmitImageForm stub).",
+                "Remaining: publish/commit Function (/submit-images -> Trees -> commit -> ref-update); SubmitImageForm fields + client-side ~2560px downscale; batch list with edit/reorder; image-free publish confirm modal."
             ]
         },
         {
