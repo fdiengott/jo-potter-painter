@@ -18,6 +18,13 @@
             ]
         },
         {
+            "title": "Migrate runtime parsers to zod",
+            "description": "Replace the hand-rolled validation in the request/response parsers (netlify/lib/parseStageImageRequest.ts, src/utils/parseStageImageResponse.ts, and any future ones) with zod schemas, for consistency with the content-collection schemas (src/content.config.ts already uses z from astro/zod) and better error messages. Keep the Parsed<T> result shape (wrap zod safeParse) so call sites are unchanged. Note: parseStageImageResponse ships to the browser via the admin island, so weigh the client bundle cost (and whether to depend on zod directly vs astro/zod).",
+            "complete": false,
+            "category": "tooling",
+            "steps": []
+        },
+        {
             "deferred": true,
             "title": "Per-Artwork buy button (e-commerce)",
             "description": "Embeddable Stripe/Shopify-style buy button as an island on Artwork detail pages. No standalone Shop page. Operational concerns (one-of-a-kind inventory, fragile shipping, tax) are the real challenge.",

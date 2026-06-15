@@ -1,0 +1,52 @@
+.wrapper:has(ul:not(:empty)) {
+    display: grid;
+    gap: var(--spacing-400);
+}
+
+.list {
+    display: grid;
+    gap: var(--spacing-300);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--spacing-200);
+    align-items: center;
+}
+
+.thumb {
+    display: block;
+    width: 6rem;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-400);
+}
+
+.altField {
+    display: grid;
+    gap: var(--spacing-50);
+}
+
+.controls {
+    display: flex;
+    gap: var(--spacing-50);
+}
+
+.status {
+    font-size: var(--font-size-200);
+    color: var(--color-ink-muted);
+}
+
+.error {
+    color: var(--color-accent);
+}
+
+.picker {
+    display: flex;
+    gap: var(--spacing-100);
+    align-items: center;
+}

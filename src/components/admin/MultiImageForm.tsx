@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react"
-import type { ImageData } from "../../types/imageData"
-import { ImagePreview } from "./ImagePreview"
-import { SubmitImageForm } from "./SubmitImageForm"
-import { MultiImageFormSuccess } from "./MultiImageFormSuccess"
-import { MultiImageFormFailure } from "./MultiImageFormFailure"
-import { createContextualLogger } from "../../utils/createContextualLogger"
-import type { StageImageRequest } from "../../types/stageImageRequest"
+import type { StagedArtwork } from "../../types/stagedArtwork"
+import { ArtworkForm } from "./ArtworkForm"
+import { ArtworksReview } from "./ArtworksReview"
 
-type FormState = "success" | "failure" | null
-
-const logger = createContextualLogger("MultiImageForm")
+type View = "ArtworkDetails" | "ArtworksReview"
 
 interface Props {
     token: string
 }
 
 export const MultiImageForm = ({ token }: Props) => {
-    const [formState, setFormState] = useState<ImageData[]>([])
-    const [submittedState, setSubmittedState] = useState<FormState>(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [artworks, setArtworks] = useState<StagedArtwork[]>([])
+    const [view, setView] = useState<View>("ArtworksReview")
     const [tokenState] = useState(token)
 
     useEffect(() => {
@@ -28,62 +21,36 @@ export const MultiImageForm = ({ token }: Props) => {
         history.replaceState(null, "", url.pathname)
     }, [tokenState])
 
-    const handleSubmitImages = async () => {
-        console.log(formState)
+    const handleRemove = (id: string) =>
+        setArtworks((prev) => {
+            const target = prev.find((artwork) => artwork.id === id)
+            target?.images.forEach((image) => URL.revokeObjectURL(image.previewUrl))
+            return prev.filter((artwork) => artwork.id !== id)
+        })
 
-        try {
-            setIsSubmitting(true)
-            const res = await fetch("/submit-images", getFetchOptions(formState, tokenState))
-
-            if (!res.ok) throw new Error("Failed to submit images")
-
-            setSubmittedState("success")
-        } catch (e) {
-            logger.error(e)
-            setSubmittedState("failure")
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-    if (submittedState === "success") {
+    if (view === "ArtworksReview") {
         return (
-            <MultiImageFormSuccess
-                onReset={() => {
-                    setFormState([])
-                    setSubmittedState(null)
+            <ArtworksReview
+                artworks={artworks}
+                token={tokenState}
+                onRemove={handleRemove}
+                onResetForm={() => {
+                    setArtworks([])
+                    setView("ArtworkDetails")
                 }}
+                onToAddArtwork={() => setView("ArtworkDetails")}
             />
         )
     }
-    if (submittedState === "failure") return <MultiImageFormFailure onRetry={() => setSubmittedState(null)} />
-
-    //  HACK:
-    const handleVerifyToken = async () => {
-        const stageImageBody: StageImageRequest = { token: tokenState, imageBlob: "test" }
-
-        const res = await fetch("/stage-image", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(stageImageBody),
-        })
-        if (!res.ok) throw new Error("Failed to verify token")
-    }
 
     return (
-        <div>
-            <button onClick={handleVerifyToken}>veryify token test</button>
-            <ImagePreview images={formState} />
-            <SubmitImageForm onSubmit={(imageData: ImageData) => setFormState((prev) => [...prev, imageData])} />
-            <button onClick={handleSubmitImages} type="button" disabled={isSubmitting}>
-                Publish to website
-            </button>
-        </div>
+        <ArtworkForm
+            token={tokenState}
+            onAddArtwork={(artwork) => {
+                setArtworks((prev) => [...prev, artwork])
+                setView("ArtworksReview")
+            }}
+            onCancel={() => setView("ArtworksReview")}
+        />
     )
 }
-
-const getFetchOptions = (images: ImageData[], token: string) => ({
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ images, token }),
-})

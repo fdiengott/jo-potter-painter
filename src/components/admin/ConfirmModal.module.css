@@ -1,0 +1,35 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: var(--spacing-gutter);
+    background: var(--color-ink-scrim);
+}
+
+.dialog {
+    max-width: 24rem;
+    padding: var(--spacing-400);
+    background: var(--color-surface);
+    border-radius: var(--radius-500);
+    box-shadow: var(--box-shadow-400);
+    text-align: center;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-500);
+    margin-block-end: var(--spacing-200);
+}
+
+.message {
+    margin: 0 0 var(--spacing-300);
+    color: var(--color-ink-muted);
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-200);
+    justify-content: center;
+}

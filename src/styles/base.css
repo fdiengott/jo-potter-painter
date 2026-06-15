@@ -71,3 +71,7 @@ button {
     border: 0;
     padding: var(--spacing-100);
 }
+button:disabled {
+    background-color: hsl(from var(--color-accent) h calc(s - 10) calc(l + 15));
+    cursor: not-allowed;
+}

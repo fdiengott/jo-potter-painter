@@ -1,0 +1,5 @@
+.btnGroup {
+    display: grid;
+    gap: var(--spacing-200);
+    justify-content: center;
+}
