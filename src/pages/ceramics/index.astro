@@ -1,67 +1,66 @@
 ---
-import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ArtworkCard from "../../components/ArtworkCard.astro";
-import { LINKS } from "../../constants/constants";
+import { getCollection } from "astro:content"
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import ArtworkCard from "../../components/ArtworkCard.astro"
+import { LINKS } from "../../constants/constants"
+import { coverTransitionName } from "../../utils/coverTransitionName"
 
-const ceramics = (await getCollection("ceramics")).sort(
-  (a, b) => b.data.year - a.data.year,
-);
+const ceramics = (await getCollection("ceramics")).sort((a, b) => b.data.year - a.data.year)
 ---
 
 <BaseLayout title="Ceramics Gallery">
-  <main class="gallery-page">
-    <h1>Ceramics</h1>
-    <ul class="gallery">
-      {
-        ceramics.map((artwork) => {
-          const cover = artwork.data.images[0];
-          const hasDetailPage =
-            artwork.data.images.length > 1 || Boolean(artwork.data.video);
-          return (
-            <li>
-              <ArtworkCard
-                cover={cover.src}
-                alt={cover.alt}
-                title={artwork.data.title}
-                year={artwork.data.year}
-                medium={artwork.data.medium}
-                href={
-                  hasDetailPage ? `${LINKS.ceramics}/${artwork.id}` : undefined
-                }
-                sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
-              />
-            </li>
-          );
-        })
-      }
-    </ul>
-  </main>
+    <main class="gallery-page">
+        <h1>Ceramics</h1>
+        <ul class="gallery">
+            {
+                ceramics.map((artwork) => {
+                    const cover = artwork.data.images[0]
+                    const hasDetailPage = artwork.data.images.length > 1 || Boolean(artwork.data.video)
+                    return (
+                        <li>
+                            <ArtworkCard
+                                cover={cover.src}
+                                alt={cover.alt}
+                                title={artwork.data.title}
+                                year={artwork.data.year}
+                                medium={artwork.data.medium}
+                                href={hasDetailPage ? `${LINKS.ceramics}/${artwork.id}` : undefined}
+                                sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
+                                transitionName={
+                                    hasDetailPage ? coverTransitionName(artwork.collection, artwork.id) : undefined
+                                }
+                            />
+                        </li>
+                    )
+                })
+            }
+        </ul>
+    </main>
 </BaseLayout>
 
 <style>
-  .gallery-page {
-    max-width: var(--content-max-width);
-    margin-inline: auto;
-    padding: var(--spacing-500) var(--spacing-gutter);
-  }
+    .gallery-page {
+        max-width: var(--content-max-width);
+        margin-inline: auto;
+        padding: var(--spacing-500) var(--spacing-gutter);
+    }
 
-  h1 {
-    margin-block-end: var(--spacing-500);
-  }
+    h1 {
+        margin-block-end: var(--spacing-500);
+    }
 
-  .gallery {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    column-gap: var(--spacing-500);
+    .gallery {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        column-gap: var(--spacing-500);
 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
-  }
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+    }
 
-  .gallery > li {
-    break-inside: avoid;
-    margin-block-end: var(--spacing-500);
-  }
+    .gallery > li {
+        break-inside: avoid;
+        margin-block-end: var(--spacing-500);
+    }
 </style>

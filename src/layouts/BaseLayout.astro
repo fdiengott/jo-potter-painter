@@ -4,62 +4,62 @@
 // Open Graph / Twitter card tags. Artwork detail pages pass their Cover as
 // `ogImage` so sharing a piece previews the piece; every other page falls
 // back to the site default.
-import "../styles/tokens.css";
-import "../styles/base.css";
-import "../styles/utilities.css";
-import Header from "../components/Header.astro";
+import "../styles/tokens.css"
+import "../styles/base.css"
+import "../styles/utilities.css"
+import "../styles/transitions.css"
+import Header from "../components/Header.astro"
 
-const SITE_NAME = "Josephine Florence - Painter / Ceramicist";
-const SITE_DESCRIPTION =
-  "Abstract paintings and ceramics by Josephine Florence.";
+const SITE_NAME = "Josephine Florence - Painter / Ceramicist"
+const SITE_DESCRIPTION = "Abstract paintings and ceramics by Josephine Florence."
 
 interface Props {
-  title: string;
-  description?: string;
-  /**
-   * Detail pages pass their Cover.
-   * TODO: add a default site OG image under src/assets and wire it as
-   * the fallback so non-detail pages still preview an image when shared.
-   */
-  ogImage?: string;
+    title: string
+    description?: string
+    /**
+     * Detail pages pass their Cover.
+     * TODO: add a default site OG image under src/assets and wire it as
+     * the fallback so non-detail pages still preview an image when shared.
+     */
+    ogImage?: string
 }
 
-const { title, description = SITE_DESCRIPTION, ogImage } = Astro.props;
+const { title, description = SITE_DESCRIPTION, ogImage } = Astro.props
 
-const pageTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
+const pageTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonicalURL} />
-    <meta name="generator" content={Astro.generator} />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="canonical" href={canonicalURL} />
+        <meta name="generator" content={Astro.generator} />
 
-    <title>{pageTitle}</title>
-    <meta name="description" content={description} />
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={SITE_NAME} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={SITE_NAME} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalURL} />
+        {ogImageURL && <meta property="og:image" content={ogImageURL} />}
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
 
-    <slot name="head" />
-  </head>
-  <body>
-    <Header />
-    <slot />
-  </body>
+        <slot name="head" />
+    </head>
+    <body>
+        <Header />
+        <slot />
+    </body>
 </html>

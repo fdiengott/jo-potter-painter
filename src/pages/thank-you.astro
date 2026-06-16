@@ -1,28 +1,25 @@
 ---
-import { LINKS } from "../constants/constants";
-import BaseLayout from "../layouts/BaseLayout.astro";
+import { LINKS } from "../constants/constants"
+import BaseLayout from "../layouts/BaseLayout.astro"
 ---
 
 <BaseLayout title="Thank you">
-  <main class="thank-you">
-    <h1>Thank you</h1>
-    <p>
-      Your message is on its way to Josephine. She reads every note and will be
-      in touch before long.
-    </p>
-    <p><a href={LINKS.home}>Back to the home page</a></p>
-  </main>
+    <main class="thank-you">
+        <h1>Thank you</h1>
+        <p>Your message is on its way to Josephine. She reads every note and will be in touch before long.</p>
+        <p><a href={LINKS.home}>Back to the home page</a></p>
+    </main>
 </BaseLayout>
 
 <style>
-  .thank-you {
-    max-width: var(--content-measure);
-    margin-inline: auto;
-    padding: var(--spacing-700) var(--spacing-gutter);
-    text-align: center;
-  }
+    .thank-you {
+        max-width: var(--content-measure);
+        margin-inline: auto;
+        padding: var(--spacing-700) var(--spacing-gutter);
+        text-align: center;
+    }
 
-  h1 {
-    margin-block-end: var(--spacing-400);
-  }
+    h1 {
+        margin-block-end: var(--spacing-400);
+    }
 </style>

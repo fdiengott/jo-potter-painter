@@ -1,26 +1,26 @@
 ---
-import { getCollection, getEntry, render } from "astro:content";
-import { getImage } from "astro:assets";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ArtworkDetail from "../../components/ArtworkDetail.astro";
+import { getCollection, getEntry, render } from "astro:content"
+import { getImage } from "astro:assets"
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import ArtworkDetail from "../../components/ArtworkDetail.astro"
 
 export async function getStaticPaths() {
-  const ceramics = await getCollection("ceramics");
-  return ceramics
-    .filter((a) => a.data.images.length > 1 || Boolean(a.data.video))
-    .map((artwork) => ({ params: { slug: artwork.id } }));
+    const ceramics = await getCollection("ceramics")
+    return ceramics
+        .filter((a) => a.data.images.length > 1 || Boolean(a.data.video))
+        .map((artwork) => ({ params: { slug: artwork.id } }))
 }
 
-const { slug } = Astro.params;
-const artwork = await getEntry("ceramics", slug)!;
-const { Content } = await render(artwork);
+const { slug } = Astro.params
+const artwork = await getEntry("ceramics", slug)!
+const { Content } = await render(artwork)
 
-const cover = artwork.data.images[0];
-const og = await getImage({ src: cover.src, format: "jpg", width: 1200 });
+const cover = artwork.data.images[0]
+const og = await getImage({ src: cover.src, format: "jpg", width: 1200 })
 ---
 
 <BaseLayout title={artwork.data.title} ogImage={og.src}>
-  <ArtworkDetail artwork={artwork}>
-    <Content />
-  </ArtworkDetail>
+    <ArtworkDetail artwork={artwork}>
+        <Content />
+    </ArtworkDetail>
 </BaseLayout>

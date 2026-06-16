@@ -1,7 +1,40 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import { LINKS } from "../constants/constants"
+import BaseLayout from "../layouts/BaseLayout.astro"
 ---
 
 <BaseLayout title="Page Not Found">
-  <h1>Page not found</h1>
+    <main class="not-found">
+        <h1>Page not found</h1>
+        <p>This page may have been moved, or perhaps it never hung here at all. Let's get you back to the work.</p>
+        <ul class="not-found__links">
+            <li><a href={LINKS.home}>Home</a></li>
+            <li><a href={LINKS.paintings}>Painting Gallery</a></li>
+            <li><a href={LINKS.ceramics}>Ceramics Gallery</a></li>
+        </ul>
+    </main>
 </BaseLayout>
+
+<style>
+    .not-found {
+        max-width: var(--content-measure);
+        margin-inline: auto;
+        padding: var(--spacing-700) var(--spacing-gutter);
+        text-align: center;
+    }
+
+    h1 {
+        margin-block-end: var(--spacing-400);
+    }
+
+    .not-found__links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-300) var(--spacing-500);
+
+        margin-block-start: var(--spacing-500);
+        padding: 0;
+        list-style: none;
+    }
+</style>
