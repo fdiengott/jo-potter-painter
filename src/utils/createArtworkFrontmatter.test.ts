@@ -42,6 +42,13 @@ const simplestMock: ArtworkTree = {
     images: [toMockImage("./path", "image alt")],
 }
 
+const noDescription: ArtworkTree = {
+    type: "painting",
+    title: "title",
+    year: 2021,
+    images: [toMockImage("./path", "image alt")],
+}
+
 describe("createArtworkFrontmatter", () => {
     it("renders scalar fields and appends the description body", () => {
         const result = createArtworkFrontmatter(ceramic)
@@ -61,14 +68,22 @@ describe("createArtworkFrontmatter", () => {
         expect(createArtworkFrontmatter(painting)).not.toContain("type:")
     })
 
+    it("does not add undefined when the description is missing", () => {
+        const result = createArtworkFrontmatter(noDescription)
+
+        expect(result).not.toContain("undefined")
+        expect(result).not.toContain("description")
+        expect(result.endsWith("---\n")).toBe(true)
+    })
+
     it("correctly serializes the simplest mock", () => {
         expect(createArtworkFrontmatter(simplestMock)).toBe(
             `---
 title: title
 year: 2021
 images:
-\t- src: ./path
-\talt: "image alt"
+  - src: ./path
+    alt: "image alt"
 ---
 
 description`,

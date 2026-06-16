@@ -15,8 +15,8 @@
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
     align-items: baseline;
     gap: var(--spacing-200);
 }

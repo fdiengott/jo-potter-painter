@@ -9,7 +9,7 @@
 .heading {
     font-family: var(--font-display);
     font-size: var(--font-size-600);
-    margin-block-end: var(--spacing-300);
+    margin-block-end: var(--spacing-200);
 }
 
 .success {
@@ -26,5 +26,5 @@
 }
 
 .button {
-    margin-block-start: var(--spacing-100);
+    margin-block-start: var(--spacing-400);
 }

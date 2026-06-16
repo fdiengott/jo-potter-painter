@@ -10,7 +10,7 @@ export const createFrontmatter = (obj: Record<string, unknown>) => {
                         Object.entries(obj as Object)
                             .map(
                                 ([listKey, listValue], i) =>
-                                    `\t${i === 0 ? "- " : ""}${listKey}: ${formatValue(listValue)}\n`,
+                                    `  ${i === 0 ? "- " : "  "}${listKey}: ${formatValue(listValue)}\n`,
                             )
                             .join(""),
                     )

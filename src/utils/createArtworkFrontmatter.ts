@@ -8,5 +8,7 @@ export const createArtworkFrontmatter = <T extends ArtworkTree>(artwork: T) => {
         images: images.map((image) => ({ src: image.path.replace("src/", "../../"), alt: image.alt })),
     }
 
+    if (!description) return createFrontmatter(cleanArtwork)
+
     return createFrontmatter(cleanArtwork) + `\n${description}`
 }
