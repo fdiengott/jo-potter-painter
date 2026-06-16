@@ -38,10 +38,10 @@ Easy wins only — Jo isn't active on social, so no heavy investment.
 - Content modeled as a collection from day one (images + metadata entries)
 - Phase 1: manual uploads
 - Phase 2: self-serve admin page → serverless function → Git commit → deploy
-  - Auth: magic link; allowlist checked server-side before any email is sent
-  - Security boundary: serverless function validates JWT (not the browser island)
-  - Binaries: Base64-encoded; unique filenames to stay append-only
-  - UX: batch-stage in browser → single publish → one commit (Trees API, deferred)
+    - Auth: magic link; allowlist checked server-side before any email is sent
+    - Security boundary: serverless function validates JWT (not the browser island)
+    - Binaries: Base64-encoded; unique filenames to stay append-only
+    - UX: batch-stage in browser → single publish → one commit (Trees API, deferred)
 
 ### E-commerce (deferred)
 

@@ -1,56 +1,56 @@
 ---
-import { Image } from "astro:assets";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { Content as Bio } from "./_bio.md";
-import portrait from "../../assets/rubber-duck.jpg";
+import { Image } from "astro:assets"
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import { Content as Bio } from "./_bio.md"
+import portrait from "../../assets/rubber-duck.jpg"
 ---
 
 <BaseLayout title="About">
-  <main class="about">
-    <h1>About</h1>
-    <div class="about__body">
-      <Image
-        class="about__photo"
-        src={portrait}
-        alt="portrait of Josephine Florence"
-        widths={[360, 720]}
-        sizes="(max-width: 40em) min(100vw, 360px), 360px"
-        loading="lazy"
-      />
-      <Bio />
-    </div>
-  </main>
+    <main class="about">
+        <h1>About</h1>
+        <div class="about__body">
+            <Image
+                class="about__photo"
+                src={portrait}
+                alt="portrait of Josephine Florence"
+                widths={[360, 720]}
+                sizes="(max-width: 40em) min(100vw, 360px), 360px"
+                loading="lazy"
+            />
+            <Bio />
+        </div>
+    </main>
 </BaseLayout>
 
 <style>
-  .about,
-  .about__body {
-    max-width: var(--content-max-width);
-    margin-inline: auto;
-  }
-
-  .about {
-    padding: var(--spacing-500) var(--spacing-gutter);
-  }
-
-  h1 {
-    margin-block-end: var(--spacing-500);
-  }
-
-  .about__photo {
-    float: none;
-    width: min(100%, 360px);
-    margin-inline: auto;
-    margin-block: 0 var(--spacing-400);
-    border-radius: var(--radius-400);
-    height: auto;
-  }
-
-  @media (min-width: 40em) {
-    .about__photo {
-      float: left;
-      width: min(40%, 360px);
-      margin: var(--spacing-50) var(--spacing-400) var(--spacing-300) 0;
+    .about,
+    .about__body {
+        max-width: var(--content-max-width);
+        margin-inline: auto;
     }
-  }
+
+    .about {
+        padding: var(--spacing-500) var(--spacing-gutter);
+    }
+
+    h1 {
+        margin-block-end: var(--spacing-500);
+    }
+
+    .about__photo {
+        float: none;
+        width: min(100%, 360px);
+        margin-inline: auto;
+        margin-block: 0 var(--spacing-400);
+        border-radius: var(--radius-400);
+        height: auto;
+    }
+
+    @media (min-width: 40em) {
+        .about__photo {
+            float: left;
+            width: min(40%, 360px);
+            margin: var(--spacing-50) var(--spacing-400) var(--spacing-300) 0;
+        }
+    }
 </style>
