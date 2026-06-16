@@ -27,7 +27,7 @@ const ceramics = defineCollection({
     z.object({
       title: z.string(),
       year: z.number().int(),
-      medium: z.string(),
+      medium: z.string().optional(),
       images: z
         .array(z.object({ src: image(), alt: z.string() }))
         .min(1)
