@@ -11,7 +11,9 @@
         "preview": "astro preview",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "typecheck": "tsc"
+        "typecheck": "tsc",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "engines": {
         "npm": "please-use-pnpm",
@@ -37,6 +39,7 @@
     },
     "devDependencies": {
         "prettier": "^3.5.3",
-        "prettier-plugin-astro": "^0.14.1"
+        "prettier-plugin-astro": "^0.14.1",
+        "vitest": "^4.1.8"
     }
 }
