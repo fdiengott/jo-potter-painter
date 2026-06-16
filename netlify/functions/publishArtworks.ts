@@ -9,6 +9,10 @@ import { createArtworkFrontmatter } from "../../src/utils/createArtworkFrontmatt
 import type { EnrichedTree, Tree } from "../../src/types/tree"
 import { slugifyTitle } from "../../src/utils/slugifyTitle"
 import { parseShaResponse } from "../lib/parseShaResponse"
+import { githubRequest } from "../lib/githubRequest"
+import { unwrapRequestAndParse } from "../lib/unwrapParsed"
+import { HttpError } from "../lib/HttpError"
+import { toIsoDate } from "../lib/dateFormatters"
 
 const GITHUB_REPO = process.env.GITHUB_REPO
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
@@ -21,43 +25,30 @@ export default async (req: Request, _context: Context) => {
     }
 
     try {
-        const reqParsed = parsePublishArtworksRequest(await req.json())
+        const body = req.json().catch(() => {
+            throw new HttpError(400, "Invalid JSON body")
+        })
+        const reqParsed = await unwrapRequestAndParse(parsePublishArtworksRequest, body, 400, "Invalid request.")
 
-        if (reqParsed.type === "error") {
-            return toResponse(400, { message: `Invalid request. ${reqParsed.message}` })
-        }
-
-        const tokenVerified = await verifyToken(reqParsed.payload.token)
+        const tokenVerified = await verifyToken(reqParsed.token)
 
         if (!tokenVerified) return toResponse(401, { message: "Unauthorized" })
 
-        const baseSha = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/main`, {
-            method: "GET",
-            headers: getHeaders(),
-        })
-
-        const parsedBaseSha = parseGitBranchSha(await baseSha.json())
-
-        if (parsedBaseSha.type === "error") {
-            logger.error("Failed to get base sha.", parsedBaseSha.message)
-            return toResponse(502, { message: "Failed to get base sha" })
-        }
-
-        const treeSha = await fetch(
-            `https://api.github.com/repos/${GITHUB_REPO}/git/commits/${parsedBaseSha.payload.sha}`,
-            {
-                method: "GET",
-                headers: getHeaders(),
-            },
+        const baseSha = await unwrapRequestAndParse(
+            parseGitBranchSha,
+            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/main`, { method: "GET" }),
+            502,
+            "Failed to get base sha",
         )
-        const parsedTreeSha = parseShaResponse(await treeSha.json())
 
-        if (parsedTreeSha.type === "error") {
-            logger.error("Failed to get tree sha.", parsedTreeSha.message)
-            return toResponse(502, { message: "Failed to get tree sha" })
-        }
+        const treeSha = await unwrapRequestAndParse(
+            parseShaResponse,
+            githubRequest(`/repos/${GITHUB_REPO}/git/commits/${baseSha.sha}`, { method: "GET" }),
+            502,
+            "Failed to get tree sha",
+        )
 
-        const artworks = reqParsed.payload.artworks
+        const { artworks } = reqParsed
 
         const artworksWithMappedImages = artworks.map((artwork) => ({
             ...artwork,
@@ -66,7 +57,7 @@ export default async (req: Request, _context: Context) => {
                     ({
                         alt: image.alt,
                         mode: "100644",
-                        path: `src/assets/${artwork.type}/${slugifyTitle(artwork.title)}.webp`,
+                        path: `src/assets/${artwork.type}s/${slugifyTitle(artwork.title)}.webp`,
                         sha: image.blobSha,
                         type: "blob",
                     }) satisfies EnrichedTree,
@@ -80,71 +71,59 @@ export default async (req: Request, _context: Context) => {
         const fileTrees = artworksWithMappedImages.map((artwork) => ({
             content: createArtworkFrontmatter(artwork),
             mode: "100644",
-            path: `src/content/${artwork.type}/${getArtworkId(artwork)}.md`,
+            path: `src/content/${artwork.type}s/${getArtworkId(artwork)}.md`,
             type: "blob",
         }))
 
-        const treesResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees`, {
-            method: "POST",
-            headers: getHeaders(),
-            body: JSON.stringify({
-                base_tree: parsedTreeSha.payload.sha,
-                tree: [...imageTrees, ...fileTrees],
+        const treesResponse = await unwrapRequestAndParse(
+            parseShaResponse,
+            githubRequest(`/repos/${GITHUB_REPO}/git/trees`, {
+                method: "POST",
+                body: JSON.stringify({
+                    base_tree: treeSha.sha,
+                    tree: [...imageTrees, ...fileTrees],
+                }),
             }),
-        })
+            502,
+            "Failed to create git trees",
+        )
 
-        const parsedTreesResponse = parseShaResponse(await treesResponse.json())
-
-        if (parsedTreesResponse.type === "error") {
-            logger.error("Failed to create git trees.", parsedTreesResponse.message)
-            return toResponse(502, { message: "Failed to create git trees" })
-        }
-
-        const commitSha = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, {
-            method: "POST",
-            headers: getHeaders(),
-            body: JSON.stringify({
-                message: `New artworks published as of ${new Date().toLocaleDateString()}`,
-                tree: parsedTreesResponse.payload.sha,
-                parents: [parsedBaseSha.payload.sha],
+        const commitSha = await unwrapRequestAndParse(
+            parseShaResponse,
+            githubRequest(`/repos/${GITHUB_REPO}/git/commits`, {
+                method: "POST",
+                body: JSON.stringify({
+                    message: `${toIsoDate(new Date())}: Publish new artworks`,
+                    tree: treesResponse.sha,
+                    parents: [baseSha.sha],
+                }),
             }),
-        })
+            502,
+            "Failed to create git commit",
+        )
 
-        const parsedCommitSha = parseShaResponse(await commitSha.json())
+        const refUpdateResponse = await unwrapRequestAndParse(
+            parseGitBranchSha,
+            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/main`, {
+                method: "PATCH",
+                body: JSON.stringify({ sha: commitSha.sha }),
+            }),
+            502,
+            "Failed to update ref",
+        )
 
-        if (parsedCommitSha.type === "error") {
-            logger.error("Failed to create git commit.", parsedCommitSha.message)
-            return toResponse(502, { message: "Failed to create git commit" })
-        }
-
-        const refUpdateResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/main`, {
-            method: "PATCH",
-            headers: getHeaders(),
-            body: JSON.stringify({ sha: parsedCommitSha.payload.sha }),
-        })
-
-        const parsedRefUpdateResponse = parseGitBranchSha(await refUpdateResponse.json())
-
-        if (parsedRefUpdateResponse.type === "error") {
-            logger.error("Failed to update ref.", parsedRefUpdateResponse.message)
-            return toResponse(502, { message: "Failed to update ref" })
-        }
-
-        return toResponse(200, { commitSha: parsedRefUpdateResponse.payload.sha })
+        return toResponse(200, { commitSha: refUpdateResponse.sha })
     } catch (err) {
-        logger.error("Failed to publish artworks.", err)
-        return toResponse(502, { message: "Failed to create git commit" })
+        if (err instanceof HttpError) {
+            logger.error(err.message, err.cause)
+            return toResponse(err.status, { message: err.message })
+        }
+
+        logger.error("Unhandled error in publishArtworks", err)
+        return toResponse(500, { message: "Internal server error" })
     }
 }
 
 export const config: Config = {
     path: "/publish-artworks",
 }
-
-const getHeaders = () => ({
-    Authorization: `Bearer ${GITHUB_TOKEN}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-    "Content-Type": "application/json",
-    "User-Agent": "Jo-flo-admin",
-})

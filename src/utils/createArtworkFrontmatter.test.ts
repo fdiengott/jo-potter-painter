@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { createArtworkFrontmatter } from "./createArtworkFrontmatter"
 import type { ArtworkTree } from "../types/artwork"
-import type { Tree } from "../types/tree"
+import type { EnrichedTree } from "../types/tree"
 
-const toMockImage = (path: string, alt: string): Tree => ({
+const toMockImage = (path: string, alt: string): EnrichedTree => ({
     path,
     alt,
     mode: "100644",

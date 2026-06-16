@@ -25,7 +25,7 @@ export const ArtworksReview = ({ artworks, token, onRemove, onResetForm, onToAdd
     const handlePublish = async () => {
         try {
             setIsPublishing(true)
-            // TODO: the /submit-images publish Function (Trees → commit → ref-update) is not built yet.
+            // TODO: parse this function properly
             const res = await fetch("/publish-artworks", getFetchOptions(artworks, token))
 
             if (!res.ok) throw new Error("Failed to publish artworks")
@@ -52,7 +52,7 @@ export const ArtworksReview = ({ artworks, token, onRemove, onResetForm, onToAdd
     if (publishedState === "failure") return <MultiImageFormFailure onRetry={() => setPublishedState(null)} />
 
     return (
-        <div>
+        <div className={styles.wrapper}>
             <ArtworkPreviews artworks={artworks} onRemove={onRemove} />
             <div className={styles.btnGroup}>
                 <button onClick={onToAddArtwork} type="button">
