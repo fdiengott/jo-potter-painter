@@ -1,3 +1,5 @@
+import type { EnrichedTree, Tree } from "./tree"
+
 export type ArtworkImage = { alt: string; blobSha: string }
 
 export type Artwork = {
@@ -9,3 +11,5 @@ export type Artwork = {
     videoSrc?: string
     description?: string
 }
+
+export type ArtworkTree = Omit<Artwork, "images"> & { images: EnrichedTree[] }

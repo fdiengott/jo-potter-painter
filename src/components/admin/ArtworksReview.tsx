@@ -45,7 +45,6 @@ export const ArtworksReview = ({ artworks, token, onRemove, onResetForm, onToAdd
             <MultiImageFormSuccess
                 onReset={() => {
                     onResetForm()
-                    setPublishedState(null)
                 }}
             />
         )
