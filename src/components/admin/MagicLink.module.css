@@ -1,0 +1,12 @@
+.form {
+    display: grid;
+    gap: var(--spacing-200);
+    max-width: 20rem;
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+    margin-block-start: var(--spacing-800);
+
+    p {
+        display: grid;
+    }
+}

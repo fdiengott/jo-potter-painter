@@ -1,0 +1,10 @@
+.wrapper {
+    display: grid;
+    gap: var(--spacing-500);
+}
+
+.btnGroup {
+    display: grid;
+    gap: var(--spacing-200);
+    justify-content: center;
+}

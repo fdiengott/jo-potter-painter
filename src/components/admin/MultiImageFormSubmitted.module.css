@@ -1,0 +1,30 @@
+.status {
+    max-width: 25rem;
+    margin-inline: auto;
+    margin-block-start: var(--spacing-800);
+    padding-inline: var(--spacing-gutter);
+    text-align: center;
+}
+
+.heading {
+    font-family: var(--font-display);
+    font-size: var(--font-size-600);
+    margin-block-end: var(--spacing-200);
+}
+
+.success {
+    color: var(--color-accent);
+}
+
+.error {
+    color: var(--color-ink);
+}
+
+.message {
+    color: var(--color-ink-muted);
+    margin: 0;
+}
+
+.button {
+    margin-block-start: var(--spacing-400);
+}

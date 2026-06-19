@@ -7,7 +7,7 @@ import ArtworkDetail from "../../components/ArtworkDetail.astro"
 export async function getStaticPaths() {
     const paintings = await getCollection("paintings")
     return paintings
-        .filter((a) => a.data.images.length > 1 || Boolean(a.data.video))
+        .filter((a) => a.data.images.length > 1 || Boolean(a.data.videoSrc))
         .map((artwork) => ({ params: { slug: artwork.id } }))
 }
 
