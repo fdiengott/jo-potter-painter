@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { artwork } = Astro.props
-const { title, year, medium, images, video } = artwork.data
+const { title, year, medium, images, videoSrc } = artwork.data
 
 const coverName = coverTransitionName(artwork.collection, artwork.id)
 
@@ -25,7 +25,7 @@ function youtubeEmbed(url: string): string | null {
     }
 }
 
-const embedUrl = video ? youtubeEmbed(video) : null
+const embedUrl = videoSrc ? youtubeEmbed(videoSrc) : null
 ---
 
 <main class="artwork">
@@ -69,8 +69,6 @@ const embedUrl = video ? youtubeEmbed(video) : null
     <div class="artwork__body">
         <slot />
     </div>
-
-    {/* Reserved for the deferred per-Artwork buy button island. */}
 </main>
 
 <style>

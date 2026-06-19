@@ -15,6 +15,11 @@ pnpm only (`engine-strict`):
 - `pnpm start` — dev server (`astro dev`)
 - `pnpm build` — production build (`astro build`)
 - `pnpm preview` — preview the build (`astro preview`)
+- `pnpm build`
+- `pnpm format` - prettier
+- `pnpm format:check` - prettier --check .
+- `pnpm typecheck` - tsc
+- `pnpm test` - vitest run
 
 ## Structure
 

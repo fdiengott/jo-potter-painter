@@ -15,7 +15,7 @@ const ceramics = (await getCollection("ceramics")).sort((a, b) => b.data.year - 
             {
                 ceramics.map((artwork) => {
                     const cover = artwork.data.images[0]
-                    const hasDetailPage = artwork.data.images.length > 1 || Boolean(artwork.data.video)
+                    const hasDetailPage = artwork.data.images.length > 1 || Boolean(artwork.data.videoSrc)
                     return (
                         <li>
                             <ArtworkCard
