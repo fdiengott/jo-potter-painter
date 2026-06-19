@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { PublishArtworksRequest } from "../../src/types/publishArtworksRequest"
+import type { PublishArtworksRequest } from "../../../src/types/publishArtworksRequest"
 
 // silence the logger to avoid logs in test output
 vi.mock("../../src/utils/createContextualLogger", () => ({
@@ -7,7 +7,7 @@ vi.mock("../../src/utils/createContextualLogger", () => ({
 }))
 
 vi.mock("../lib/verifyToken", () => ({ verifyToken: vi.fn().mockResolvedValue(true) }))
-import { verifyToken } from "../lib/verifyToken"
+import { verifyToken } from "../../lib/verifyToken"
 
 const MOCKS = {
     repo: "owner/repo",
@@ -24,7 +24,7 @@ const CALLS = {
     createPullRequest: 5,
 } as const
 
-const getPublishFn = async () => (await import("./publishArtworks")).default
+const getPublishFn = async () => (await import("./publishArtworks/publishArtworkss")).default
 
 let fetchMock: ReturnType<typeof vi.fn>
 
