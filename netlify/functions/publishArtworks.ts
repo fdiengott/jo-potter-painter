@@ -1,4 +1,4 @@
-import type { Config, Context } from "@netlify/functions"
+import type { Config } from "@netlify/functions"
 import { createContextualLogger } from "../../src/utils/createContextualLogger"
 import { toResponse } from "../lib/toRequest"
 import { parsePublishArtworksRequest } from "../lib/parsePublishArtworksRequest"
@@ -22,7 +22,7 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH
 
 const logger = createContextualLogger("publishArtworks")
 
-export default async (req: Request, _context: Context) => {
+export default async (req: Request) => {
     if (!GITHUB_REPO || !GITHUB_TOKEN || !GITHUB_BRANCH) {
         return toResponse(500, { message: "Missing environment variables" })
     }
@@ -123,7 +123,7 @@ export default async (req: Request, _context: Context) => {
             githubRequest(`/repos/${GITHUB_REPO}/pulls`, {
                 method: "POST",
                 body: JSON.stringify({
-                    title: `${toIsoDate(new Date())}: Publish ${artworks.length} new artworks`,
+                    title: `${toIsoDate(new Date())}: Publish ${artworks.length} new artwork(s)`,
                     base: GITHUB_BRANCH,
                     head: newBranchName,
                 }),
