@@ -3,7 +3,7 @@ import { glob } from "astro/loaders"
 import { z } from "astro/zod"
 
 // images: 1–5 per Artwork. images[0] is the Cover (the image shown on the
-// images.length > 1 || video
+// images.length > 1 || videoSrc
 // Gallery). An Artwork earns a detail page only when it has more to show —
 
 const paintings = defineCollection({

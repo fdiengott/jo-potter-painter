@@ -39,7 +39,7 @@
         {
             "title": "Fix video field name drift (videoSrc vs video)",
             "description": "content.config.ts defines the field as `videoSrc`, but ADR 0002, both galleries (paintings/ceramics index.astro hasDetailPage check), and ArtworkDetail.astro all read `artwork.data.video`. The field is therefore always undefined: hasDetailPage only ever fires on images.length > 1, and the YouTube embed never renders on detail pages. Reconcile on the ADR 0002 name `video` (rename the schema field, or update all readers) and confirm hasDetailPage + the embed work end to end.",
-            "complete": false,
+            "complete": true,
             "category": "bug",
             "steps": []
         },

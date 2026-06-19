@@ -20,7 +20,11 @@ export const ArtworkPreviews = ({ artworks, onRemove }: Props) => {
                             {artwork.type} · {artwork.year} · {artwork.images.length} image
                             {artwork.images.length === 1 ? "" : "s"}
                         </span>
-                        <button type="button" onClick={() => onRemove(artwork.id)} aria-label={`Remove ${artwork.title}`}>
+                        <button
+                            type="button"
+                            onClick={() => onRemove(artwork.id)}
+                            aria-label={`Remove ${artwork.title}`}
+                        >
                             ✕
                         </button>
                     </div>
