@@ -13,6 +13,8 @@ import { githubRequest } from "../lib/githubRequest"
 import { unwrapRequestAndParse } from "../lib/unwrapParsed"
 import { HttpError } from "../lib/HttpError"
 import { toIsoDate } from "../lib/dateFormatters"
+import { getPublishBranchName } from "../lib/getPublishBranchName"
+import { parsePullRequestResponse } from "../lib/parsePullRequestResponse"
 
 const GITHUB_REPO = process.env.GITHUB_REPO
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
@@ -37,7 +39,7 @@ export default async (req: Request, _context: Context) => {
 
         const baseSha = await unwrapRequestAndParse(
             parseGitBranchSha,
-            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/main`, { method: "GET" }),
+            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { method: "GET" }),
             502,
             "Failed to get base sha",
         )
@@ -76,7 +78,7 @@ export default async (req: Request, _context: Context) => {
             type: "blob",
         }))
 
-        const treesResponse = await unwrapRequestAndParse(
+        const uploadedFilesAndImagesRef = await unwrapRequestAndParse(
             parseShaResponse,
             githubRequest(`/repos/${GITHUB_REPO}/git/trees`, {
                 method: "POST",
@@ -89,13 +91,13 @@ export default async (req: Request, _context: Context) => {
             "Failed to create git trees",
         )
 
-        const commitSha = await unwrapRequestAndParse(
+        const newUploadsCommitRef = await unwrapRequestAndParse(
             parseShaResponse,
             githubRequest(`/repos/${GITHUB_REPO}/git/commits`, {
                 method: "POST",
                 body: JSON.stringify({
                     message: `${toIsoDate(new Date())}: Publish new artworks`,
-                    tree: treesResponse.sha,
+                    tree: uploadedFilesAndImagesRef.sha,
                     parents: [baseSha.sha],
                 }),
             }),
@@ -103,17 +105,37 @@ export default async (req: Request, _context: Context) => {
             "Failed to create git commit",
         )
 
-        const refUpdateResponse = await unwrapRequestAndParse(
+        const newBranchName = getPublishBranchName()
+
+        // creates a branch with the new commit
+        await unwrapRequestAndParse(
             parseGitBranchSha,
-            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
-                method: "PATCH",
-                body: JSON.stringify({ sha: commitSha.sha }),
+            githubRequest(`/repos/${GITHUB_REPO}/git/refs`, {
+                method: "POST",
+                body: JSON.stringify({ ref: `refs/heads/${newBranchName}`, sha: newUploadsCommitRef.sha }),
             }),
             502,
-            "Failed to update ref",
+            "Failed to create branch ref",
         )
 
-        return toResponse(200, { commitSha: refUpdateResponse.sha })
+        const newUploadsPullRequest = await unwrapRequestAndParse(
+            parsePullRequestResponse,
+            githubRequest(`/repos/${GITHUB_REPO}/pulls`, {
+                method: "POST",
+                body: JSON.stringify({
+                    title: `${toIsoDate(new Date())}: Publish ${artworks.length} new artworks`,
+                    base: GITHUB_BRANCH,
+                    head: newBranchName,
+                }),
+            }),
+            502,
+            "Failed to create pull request",
+        )
+
+        return toResponse(200, {
+            pullRequestNumber: newUploadsPullRequest.number,
+            pullRequestUrl: newUploadsPullRequest.html_url,
+        })
     } catch (err) {
         if (err instanceof HttpError) {
             logger.error(err.message, err.cause)
