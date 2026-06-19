@@ -1,23 +1,6 @@
 {
     "tasks": [
         {
-            "title": "Admin page + magic-link auth",
-            "description": "The /admin React island (client:only) and the request-magic-link Netlify Function: email checked against a server-side allowlist, a short-lived HS256 JWT signed and delivered in the magic link. /admin excluded from robots.txt and the sitemap. Auth/request half built (see plan.md status); magic-link email delivered via Resend (netlify/lib/sendMagicLinkEmail.ts). See ADR 0003.",
-            "complete": true,
-            "category": "admin",
-            "steps": []
-        },
-        {
-            "title": "Admin batch upload + publish function",
-            "description": "Stage a batch of Artworks in the browser and publish them as one atomic commit -> one Netlify build, via incremental GitHub blobs + a single tree/commit/ref-update. Create-only. Full design (master/detail UI, form fields, schema drift, image prep, orphan-blob handling, publish speedbump) in ADR 0004 (refines ADR 0003).",
-            "complete": false,
-            "category": "admin",
-            "steps": [
-                "Done: schema drift (ceramics drop medium, paintings optional); Artwork-shaped types (imageData/parsed/stageImageRequest); JWT-verified blob-staging Function (/stage-image -> GitHub git/blobs); shared netlify/lib helpers (toResponse, isOnAllowList, verifyToken, parseStageImageRequest); createContextualLogger; admin component scaffold (ImagePreview, MultiImageForm success/failure, SubmitImageForm stub).",
-                "Remaining: publish/commit Function (/submit-images -> Trees -> commit -> ref-update); SubmitImageForm fields + client-side ~2560px downscale; batch list with edit/reorder; image-free publish confirm modal."
-            ]
-        },
-        {
             "title": "Migrate runtime parsers to zod",
             "description": "Replace the hand-rolled validation in the request/response parsers (netlify/lib/parseStageImageRequest.ts, src/utils/parseStageImageResponse.ts, and any future ones) with zod schemas, for consistency with the content-collection schemas (src/content.config.ts already uses z from astro/zod) and better error messages. Keep the Parsed<T> result shape (wrap zod safeParse) so call sites are unchanged. Note: parseStageImageResponse ships to the browser via the admin island, so weigh the client bundle cost (and whether to depend on zod directly vs astro/zod).",
             "complete": false,
@@ -30,6 +13,42 @@
             "description": "Embeddable Stripe/Shopify-style buy button as an island on Artwork detail pages. No standalone Shop page. Operational concerns (one-of-a-kind inventory, fragile shipping, tax) are the real challenge.",
             "complete": false,
             "category": "ecommerce",
+            "steps": []
+        },
+        {
+            "title": "Separate each gallery by year with text: Selected Works <year>",
+            "description": "Split both galleries (paintings and ceramics) into per-year `<h2>Selected Works <year>` sections, newest year first. See ADR 0005.",
+            "complete": false,
+            "category": "ui",
+            "steps": []
+        },
+        {
+            "title": "Add optional order attribute to both schemas",
+            "description": "Add an optional integer `order` attribute to both collections, used as the secondary gallery sort (after year): ascending, with unset entries placed after in slug order. Scoped per-year. See ADR 0005.",
+            "complete": false,
+            "category": "ui",
+            "steps": []
+        },
+        {
+            "title": "Remove dot that accompanies medium when medium is undefined everywhere",
+            "description": "The Artwork detail meta line renders `{year} · {medium}`, leaving a dangling `<year> · ` when medium is undefined (every ceramic, medium-less paintings). Fix ArtworkDetail.astro to guard the separator like ArtworkCard already does. Sole offending site; see ADR 0005.",
+            "complete": false,
+            "category": "ui",
+            "steps": []
+        },
+        {
+            "title": "Fix video field name drift (videoSrc vs video)",
+            "description": "content.config.ts defines the field as `videoSrc`, but ADR 0002, both galleries (paintings/ceramics index.astro hasDetailPage check), and ArtworkDetail.astro all read `artwork.data.video`. The field is therefore always undefined: hasDetailPage only ever fires on images.length > 1, and the YouTube embed never renders on detail pages. Reconcile on the ADR 0002 name `video` (rename the schema field, or update all readers) and confirm hasDetailPage + the embed work end to end.",
+            "complete": false,
+            "category": "bug",
+            "steps": []
+        },
+        {
+            "deferred": true,
+            "title": "On artwork detail page, show the description beneath year and medium",
+            "description": "The description should be shown beneath the year and medium, not at the bottom of the page.",
+            "complete": false,
+            "category": "ui",
             "steps": []
         }
     ]
