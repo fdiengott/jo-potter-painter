@@ -16,11 +16,12 @@ import { toIsoDate } from "../lib/dateFormatters"
 
 const GITHUB_REPO = process.env.GITHUB_REPO
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH
 
 const logger = createContextualLogger("publishArtworks")
 
 export default async (req: Request, _context: Context) => {
-    if (!GITHUB_REPO || !GITHUB_TOKEN) {
+    if (!GITHUB_REPO || !GITHUB_TOKEN || !GITHUB_BRANCH) {
         return toResponse(500, { message: "Missing environment variables" })
     }
 
@@ -104,7 +105,7 @@ export default async (req: Request, _context: Context) => {
 
         const refUpdateResponse = await unwrapRequestAndParse(
             parseGitBranchSha,
-            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/main`, {
+            githubRequest(`/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
                 method: "PATCH",
                 body: JSON.stringify({ sha: commitSha.sha }),
             }),
