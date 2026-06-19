@@ -36,3 +36,13 @@ src/
 
 Reframe from leaving comments unless the code cannot explain some very important context.
 Comments are a cost that are better not incurred.
+
+## Tool Notes
+
+The following git commands are available in this project:
+
+```
+status diff log show branch tag ls-files grep blame shortlog
+```
+
+The rest are prohibited. If a specific command is needed, it must be requested and approved explicitly.

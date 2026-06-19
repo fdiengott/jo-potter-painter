@@ -33,15 +33,18 @@ Easy wins only — Jo isn't active on social, so no heavy investment.
 - A clickable Cover (one whose Artwork has a detail page) shows an **icon overlay** signalling it's a link; non-clickable Covers (single image, no video — most paintings) have no icon and aren't clickable. The icon makes the affordance explicit.
 - Detail pages are where the deferred per-Artwork buy button will live. There is no separate Shop page.
 
-### Image Uploads (deferred)
+### Image Uploads (Phase 2 in progress)
 
 - Content modeled as a collection from day one (images + metadata entries)
 - Phase 1: manual uploads
-- Phase 2: self-serve admin page → serverless function → Git commit → deploy
+- Phase 2: self-serve admin page → serverless function → Git commit → deploy (see ADR 0003 for the trust/auth design and ADR 0004 for the batch upload flow)
     - Auth: magic link; allowlist checked server-side before any email is sent
     - Security boundary: serverless function validates JWT (not the browser island)
     - Binaries: Base64-encoded; unique filenames to stay append-only
-    - UX: batch-stage in browser → single publish → one commit (Trees API, deferred)
+    - UX: a **batch** of Artworks (each with multiple images) staged in the browser → single publish → **one atomic commit → one build**. Decoupled transport: each image uploads to a GitHub **blob** via a JWT-verified Function (no build); "Publish all" assembles one tree → one commit → one ref update (the only build trigger), so batch size never hits Netlify's ~6MB per-request limit. Create-only — no edit/delete of published Artworks.
+    - Form is master/detail: a batch list (Cover thumbnails + Publish) and a single Artwork form (collection toggle, title, year pre-filled current, optional medium for paintings only, optional video URL, optional description written as the Markdown body, 1–5 images with required alt, up/down ordering, slot 1 = Cover). The form has no Publish button (exits via Add-to-batch / Save / Discard); Publish sits behind an image-free confirm modal.
+    - Images downscaled client-side to a ~2560px master before Base64; Cover is set by image order in the admin (no separate cover field)
+    - **Status:** auth/request half built — `/admin` island (`AdminIsland` → `MagicLink`/`MultiImageForm`) + the `request-magic-link` Function signing the JWT and emailing the link via Resend (`netlify/lib/sendMagicLinkEmail.ts`; needs `EMAIL_API_KEY` / `EMAIL_DOMAIN_ORIGIN` set in Netlify and a verified Resend sending domain). The blob-staging Function is now built — `stageImage.ts` (`/stage-image`) JWT-verifies (`netlify/lib/verifyToken.ts`) and `POST`s each Base64 image to the GitHub `git/blobs` API (no commit, no build), with the schema drift and the Artwork-shaped type restructure landed and the admin form scaffolded. The publish/commit Function (`submitImages.ts`, Trees API → one commit → ref update) is still a stub, and client-side image downscaling, batch list-edit, and the publish confirm modal remain.
 
 ### E-commerce (deferred)
 

@@ -1,12 +1,14 @@
 {
     "permissions": {
         "allow": [
-            "Bash(mkdir -p src/content/paintings src/content/ceramics src/assets/paintings src/assets/ceramics)",
-            "Bash(touch src/content/paintings/.gitkeep src/content/ceramics/.gitkeep src/assets/paintings/.gitkeep src/assets/ceramics/.gitkeep)",
+            "Bash(mkdir -p *)",
+            "Bash(touch *)",
             "Bash(pnpm exec *)",
             "Bash(pnpm build *)",
             "Bash(pnpm install *)",
-            "Bash(export CI=true)"
+            "Bash(export CI=true)",
+            "Bash(cd *)",
+            "Bash(pnpm vitest *)"
         ]
     }
 }

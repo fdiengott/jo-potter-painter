@@ -73,6 +73,7 @@
     --content-measure: 65ch; /* comfortable reading line length */
     --radius-300: 2px;
     --radius-400: 4px;
+    --radius-500: 6px;
 
     --breakpoint-sm: 40em; /* 640px */
     --breakpoint-md: 48em; /* 768px */

@@ -7,7 +7,7 @@ interface Props {
     alt: string
     title: string
     year: number
-    medium: string
+    medium?: string
     href?: string
     loading?: "lazy" | "eager"
     sizes?: string
@@ -50,7 +50,7 @@ const {
     </div>
     <figcaption class="card__caption">
         <span class="card__title">{title}</span>
-        <span class="card__meta">{year} · {medium}</span>
+        <span class="card__meta">{year} {medium && `· ${medium}`}</span>
     </figcaption>
 </figure>
 

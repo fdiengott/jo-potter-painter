@@ -17,7 +17,7 @@ const paintings = defineCollection({
                 .array(z.object({ src: image(), alt: z.string() }))
                 .min(1)
                 .max(5),
-            video: z.url().optional(),
+            videoSrc: z.url().optional(),
         }),
 })
 
@@ -27,12 +27,11 @@ const ceramics = defineCollection({
         z.object({
             title: z.string(),
             year: z.number().int(),
-            medium: z.string().optional(),
             images: z
                 .array(z.object({ src: image(), alt: z.string() }))
                 .min(1)
                 .max(5),
-            video: z.url().optional(),
+            videoSrc: z.url().optional(),
         }),
 })
 

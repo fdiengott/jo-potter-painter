@@ -5,3 +5,5 @@ export const LINKS = {
     ceramics: "/ceramics",
     contact: "/contact",
 } as const
+
+export const MAX_IMAGES = 5

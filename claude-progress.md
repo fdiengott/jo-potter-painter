@@ -176,3 +176,37 @@ Pending user-run `pnpm build`.
 ---
 
 Page inventory is now complete (Home, About, Paintings, Ceramics, Artwork detail, Contact, thank-you, 404). The only open PRD items are **Configure Netlify deployment** (mostly external: add `netlify.toml`, connect the GitHub repo in the Netlify dashboard, set the form-notification email, confirm a deploy) and the **Set up project folder structure** flag, which is de facto already satisfied by the existing layout.
+
+## Record Phase 2 upload-flow design (2026-06-12)
+
+Walked through the deferred image-upload flow and resolved three open design points, then recorded them so they don't get re-litigated when Phase 2 begins. No application code — documentation only.
+
+- Added **`docs/adr/0003-phase2-admin-upload-flow.md`**: the commit-driven static model (an Artwork is files in Git; "upload" = commit → Netlify deploy), the publish Function as the sole trust boundary, magic-link auth (allowlist-before-send, signed JWT, deliberately un-hardened for a single Gmail user, not Netlify Identity), and a one-atomic-commit publish via the GitHub **Trees API** (chosen over Contents-API-per-file to avoid N deploys and partial-publish states).
+- **Cover** decision: it's the first image in the list with **no separate cover field**, set by reordering in the admin. Reworded the Cover entry in **`CONTEXT.md`** accordingly (its prior "set manually, not through the upload flow" predated Phase 2) and cross-referenced ADR 0003 in **`plan.md`**.
+
+## Build admin page + magic-link auth (2026-06-12)
+
+Started Phase 2 — the auth/request half of the self-serve admin. The publish/commit half (Trees API) is still to come.
+
+- **`src/pages/admin.astro`** mounts **`AdminIsland`** with `client:only="react"` (no SSR, no SEO needed). The island reads a `?token=` query param and branches: token present → `MultiImageForm`, otherwise → `MagicLink`. Presence only drives *display*; validity is enforced server-side later by the publish Function (the trust boundary, per ADR 0003).
+- **`MagicLink.tsx`** — email form that POSTs to `/request-magic-link`; **`MagicLinkSubmitted.tsx`** renders success/error states (own CSS module, design tokens, centred to match the form). Error state has a "Try again" reload.
+- **`netlify/functions/requestMagicLink.ts`** (v2, `config.path = /request-magic-link`): POST-only (405), env + JSON guards (500/400), checks the email against `ADMIN_ALLOW_LIST` (comma-separated, normalised), signs an **HS256 JWT** (sub=email, 15m TTL) with `jose`, and returns a **generic 200 regardless of allowlist match** so the endpoint can't enumerate the allowlist. Magic link points at `${URL}/admin?token=…`.
+- **`netlify/lib/emailClient.ts`** — mock email client (console.logs the link). Lives under `netlify/` so client code can't import it / a real provider key never leaks into the bundle. **TODO: swap for a real transactional provider.**
+- Infra: added **`"type": "module"`** to `package.json` so the function bundles as ESM (`.mjs`) and can import the ESM-only `jose` (added as a dep) — fixes the `require()` of an ES module error. Excluded `/admin` from **`robots.txt`** (`Disallow`) and the **sitemap** (`filter` in `astro.config.mjs`).
+
+Caveat: email delivery is mocked — paste the link printed in the `netlify dev` console into the browser to test the token branch.
+
+## Real magic-link email + start of the batch-upload Function (2026-06-15)
+
+Closed out the magic-link auth task (real email now sends) and began the ADR 0004 batch-upload feature — the per-image transport half is built; the publish/commit half is still a stub.
+
+- **Real email:** the mock `netlify/lib/emailClient.ts` was replaced by **`netlify/lib/sendMagicLinkEmail.ts`** (Resend). Needs `EMAIL_API_KEY` and `EMAIL_DOMAIN_ORIGIN` set in Netlify plus a verified Resend sending domain. This completes "Admin page + magic-link auth" (now `complete` in `prd.json`).
+- **Blob-staging Function** — **`netlify/functions/stageImage.ts`** (`config.path = /stage-image`): verifies the JWT, then `POST`s one Base64 image to the GitHub `git/blobs` API (with `GITHUB_REPO` / `GITHUB_TOKEN`) and returns the blob `sha`. This is ADR 0004's decoupled per-image transport — a blob is referenced by nothing, so it creates **no commit and no build**.
+- **Shared `netlify/lib/` helpers** extracted/added: `toRequest.ts` (`toResponse`), `isOnAllowList.ts` (parses `ADMIN_ALLOW_LIST`), `verifyToken.ts` (jose `jwtVerify` + exp/sub checks + allowlist), `parseStageImageRequest.ts`. `requestMagicLink.ts` was refactored onto the shared `toResponse` + `isOnAllowList` (its private copies removed).
+- **`src/utils/createContextualLogger.ts`** — a tiny prefixed `console` logger (`[context] …`), adopted across the Functions and the `MagicLink` / `MultiImageForm` islands.
+- **Type restructure** to the Artwork shape (ADR 0004): `src/types/imageData.ts` — `ImageData` is now per-Artwork (`type: "ceramic" | "painting"`, title, year, optional medium, `images: { alt, blobSha }[]`, optional `videoSrc`/`description`), no longer per-image — plus `src/types/parsed.ts` (`Parsed<T>` discriminated union) and `src/types/stageImageRequest.ts`.
+- **Schema drift landed** (ADR 0004): `src/content.config.ts` drops `medium` from ceramics and makes it optional on paintings. The three ceramic seed entries drop their `medium` frontmatter, `ArtworkCard.astro` renders `· {medium}` only when present, and `ceramics/index.astro` stops passing it.
+- **Admin scaffold:** deleted `ImageFormSubmitted.tsx`; added `ImagePreview.tsx`, `MultiImageFormSuccess.tsx`, `MultiImageFormFailure.tsx`, the shared `MultiImageFormSubmitted.module.css`, and a stub `SubmitImageForm.tsx`. `MultiImageForm.tsx` now accumulates an `ImageData[]` batch, posts it to `/submit-images`, and renders success/failure screens.
+- **`scripts/mintJwt.js`** — dev helper that mints a 15-minute HS256 token (subject = an allowlisted email) for local Function testing.
+
+Still to build (the publish path doesn't work end-to-end yet): **`netlify/functions/submitImages.ts`** is an empty stub — the Trees → commit → ref-update that turns staged blobs into one atomic commit/build isn't written. `SubmitImageForm` has no fields, and there's no client-side ~2560px downscaling, batch list-edit/reorder, or image-free publish confirm modal.

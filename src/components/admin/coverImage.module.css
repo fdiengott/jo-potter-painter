@@ -1,0 +1,18 @@
+.cover {
+    position: relative;
+    outline: 2px dashed var(--color-ink-muted);
+    outline-offset: var(--spacing-50);
+    border-radius: var(--radius-300);
+}
+
+.coverLabel {
+    position: absolute;
+    inset-block-end: var(--spacing-50);
+    inset-inline-start: var(--spacing-50);
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    font-size: var(--font-size-200);
+    line-height: 1;
+    padding: var(--spacing-50);
+    border-radius: var(--radius-300);
+}

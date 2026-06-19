@@ -1,0 +1,8 @@
+---
+import { AdminIsland } from "../components/admin/AdminIsland"
+import BaseLayout from "../layouts/BaseLayout.astro"
+---
+
+<BaseLayout title="Admin">
+    <AdminIsland client:only="react" />
+</BaseLayout>
