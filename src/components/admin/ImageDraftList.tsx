@@ -5,14 +5,14 @@ import coverStyles from "./coverImage.module.css"
 
 interface Props {
     images: DraftImage[]
-    onPick: (files: FileList) => void
+    onSelectImages: (files: FileList) => void
     onAltChange: (id: string, alt: string) => void
     onMoveUp: (index: number) => void
     onMoveDown: (index: number) => void
     onRemove: (id: string) => void
 }
 
-export const ImageDraftList = ({ images, onPick, onAltChange, onMoveUp, onMoveDown, onRemove }: Props) => (
+export const ImageDraftList = ({ images, onSelectImages, onAltChange, onMoveUp, onMoveDown, onRemove }: Props) => (
     <div className={styles.wrapper}>
         <ul className={styles.list}>
             {images.map((image, index) => (
@@ -31,9 +31,12 @@ export const ImageDraftList = ({ images, onPick, onAltChange, onMoveUp, onMoveDo
                             onChange={(e) => onAltChange(image.id, e.target.value)}
                             required
                         />
-                        {image.status === "uploading" && <span className={styles.status}>Uploading…</span>}
-                        {image.status === "error" && (
+                        {image.status === "pending" && <span className={styles.status}>Uploading…</span>}
+                        {image.status === "failure" && (
                             <span className={`${styles.status} ${styles.error}`}>Upload failed — remove and retry</span>
+                        )}
+                        {image.status === "success" && (
+                            <span className={`${styles.status} ${styles.success}`}>Upload successful!</span>
                         )}
                     </div>
 
@@ -70,7 +73,7 @@ export const ImageDraftList = ({ images, onPick, onAltChange, onMoveUp, onMoveDo
                     accept="image/*"
                     multiple
                     onChange={(e) => {
-                        if (e.target.files?.length) onPick(e.target.files)
+                        if (e.target.files?.length) onSelectImages(e.target.files)
                         e.target.value = ""
                     }}
                 />

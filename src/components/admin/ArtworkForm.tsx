@@ -31,27 +31,26 @@ export const ArtworkForm = ({ token, onAddArtwork, onCancel }: Props) => {
     const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
     const updateImage = (id: string, patch: Partial<DraftImage>) =>
-        setImages((prev) => prev.map((image) => (image.id === id ? { ...image, ...patch } : image)))
+        setImages((prev) => prev.map((image) => (image.id !== id ? image : { ...image, ...patch })))
 
-    const handlePick = (files: FileList) => {
+    const handleSelectImages = (fileList: FileList) => {
         const remaining = MAX_IMAGES - images.length
-        const picked = Array.from(files).slice(0, remaining)
+        const files = Array.from(fileList).slice(0, remaining)
 
-        const drafts: DraftImage[] = picked.map((file) => ({
-            id: crypto.randomUUID(),
-            previewUrl: URL.createObjectURL(file),
-            alt: "",
-            status: "uploading",
-        }))
+        if (!files.length) return
 
-        setImages((prev) => [...prev, ...drafts])
+        const uploadImageCommands = files.map(createImageCommand)
 
-        drafts.forEach((draft, index) => {
-            stageImage(picked[index], token)
-                .then((blobSha) => updateImage(draft.id, { status: "uploaded", blobSha }))
+        setImages((prev) => [...prev, ...uploadImageCommands])
+
+        uploadImageCommands.forEach((command, index) => {
+            updateImage(command.id, { status: "pending" })
+
+            stageImage(files[index], token)
+                .then((blobSha) => updateImage(command.id, { status: "success", blobSha }))
                 .catch((e) => {
                     logger.error("Failed to stage image", e)
-                    updateImage(draft.id, { status: "error" })
+                    updateImage(command.id, { status: "failure" })
                 })
         })
     }
@@ -178,7 +177,7 @@ export const ArtworkForm = ({ token, onAddArtwork, onCancel }: Props) => {
 
                 <ImageDraftList
                     images={images}
-                    onPick={handlePick}
+                    onSelectImages={handleSelectImages}
                     onAltChange={handleAltChange}
                     onMoveUp={(index) => handleMoveImage(index, -1)}
                     onMoveDown={(index) => handleMoveImage(index, 1)}
@@ -211,3 +210,10 @@ export const ArtworkForm = ({ token, onAddArtwork, onCancel }: Props) => {
         </>
     )
 }
+
+const createImageCommand = (file: File): DraftImage => ({
+    id: crypto.randomUUID(),
+    previewUrl: URL.createObjectURL(file),
+    alt: "",
+    status: "pending",
+})
