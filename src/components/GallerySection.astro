@@ -1,0 +1,28 @@
+---
+import ArtworkCard from "./ArtworkCard.astro"
+import { LINKS } from "../constants/constants"
+import { coverTransitionName } from "../utils/coverTransitionName"
+
+const { artwork } = Astro.props
+const cover = artwork.data.images[0]
+const hasDetailPage = artwork.data.images.length > 1 || Boolean(artwork.data.videoSrc)
+---
+
+<li>
+    <ArtworkCard
+        cover={cover.src}
+        alt={cover.alt}
+        title={artwork.data.title}
+        year={artwork.data.year}
+        href={hasDetailPage ? `${LINKS.ceramics}/${artwork.id}` : undefined}
+        sizes="(min-width: 64em) 33vw, (min-width: 40em) 50vw, 100vw"
+        transitionName={hasDetailPage ? coverTransitionName(artwork.collection, artwork.id) : undefined}
+    />
+</li>
+
+<style>
+    li {
+        break-inside: avoid;
+        margin-block-end: var(--spacing-500);
+    }
+</style>
