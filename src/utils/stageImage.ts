@@ -1,6 +1,9 @@
 import { downscaleImage } from "./downscaleImage"
 import { parseStageImageResponse } from "./parseStageImageResponse"
 import type { StageImageRequest } from "../types/stageImageRequest"
+import { createContextualLogger } from "./createContextualLogger"
+
+const logger = createContextualLogger("stageImage")
 
 export const stageImage = async (file: File, token: string): Promise<string> => {
     const imageBlob = await downscaleImage(file)
@@ -14,7 +17,9 @@ export const stageImage = async (file: File, token: string): Promise<string> => 
 
     if (!res.ok) throw new Error(`stage-image failed: ${res.status}`)
 
-    const parsed = parseStageImageResponse(await res.json())
+    const parsed = parseStageImageResponse(
+        await res.json().catch((e) => logger.error("Failed to parse stage-image response", e)),
+    )
     if (parsed.type === "error") throw new Error(parsed.message)
 
     return parsed.payload.sha

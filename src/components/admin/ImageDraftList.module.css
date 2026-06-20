@@ -41,6 +41,20 @@
     color: var(--color-ink-muted);
 }
 
+.success {
+    animation: success-fade 2s forwards;
+}
+
+@keyframes success-fade {
+    0%,
+    98% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .error {
     color: var(--color-accent);
 }

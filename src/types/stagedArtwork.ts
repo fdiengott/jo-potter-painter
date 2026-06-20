@@ -1,6 +1,6 @@
 import type { Artwork } from "./artwork"
 
-export type ImageStatus = "uploading" | "uploaded" | "error"
+export type ImageStatus = "pending" | "success" | "failure"
 
 export type DraftImage = {
     id: string
