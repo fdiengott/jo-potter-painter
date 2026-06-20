@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from "astro:content"
+import type { YearSection } from "../utils/groupArtworksByYear"
+import GallerySection from "./GallerySection.astro"
+
+type Artwork = CollectionEntry<"paintings"> | CollectionEntry<"ceramics">
+
+interface Props {
+    sections: YearSection<Artwork>[]
+}
+
+const { sections } = Astro.props
+---
+
+<div class="galleries-wrapper">
+    {
+        sections.map((section) => (
+            <section class="gallery-section">
+                <h2>Selected Works {section.year}</h2>
+                <ul class="gallery">
+                    {section.artworks.map((artwork) => (
+                        <GallerySection artwork={artwork} />
+                    ))}
+                </ul>
+            </section>
+        ))
+    }
+</div>
+
+<style>
+    .galleries-wrapper {
+        display: grid;
+        gap: var(--spacing-500);
+    }
+
+    .gallery-section h2 {
+        margin-block-end: var(--spacing-400);
+    }
+
+    .gallery {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        column-gap: var(--spacing-500);
+
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+    }
+</style>

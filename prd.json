@@ -18,21 +18,21 @@
         {
             "title": "Separate each gallery by year with text: Selected Works <year>",
             "description": "Split both galleries (paintings and ceramics) into per-year `<h2>Selected Works <year>` sections, newest year first. See ADR 0005.",
-            "complete": false,
+            "complete": true,
             "category": "ui",
             "steps": []
         },
         {
             "title": "Add optional order attribute to both schemas",
             "description": "Add an optional integer `order` attribute to both collections, used as the secondary gallery sort (after year): ascending, with unset entries placed after in slug order. Scoped per-year. See ADR 0005.",
-            "complete": false,
+            "complete": true,
             "category": "ui",
             "steps": []
         },
         {
             "title": "Remove dot that accompanies medium when medium is undefined everywhere",
             "description": "The Artwork detail meta line renders `{year} · {medium}`, leaving a dangling `<year> · ` when medium is undefined (every ceramic, medium-less paintings). Fix ArtworkDetail.astro to guard the separator like ArtworkCard already does. Sole offending site; see ADR 0005.",
-            "complete": false,
+            "complete": true,
             "category": "ui",
             "steps": []
         },

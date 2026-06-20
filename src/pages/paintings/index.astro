@@ -1,39 +1,16 @@
 ---
 import { getCollection } from "astro:content"
 import BaseLayout from "../../layouts/BaseLayout.astro"
-import ArtworkCard from "../../components/ArtworkCard.astro"
-import { LINKS } from "../../constants/constants"
-import { coverTransitionName } from "../../utils/coverTransitionName"
+import { groupArtworksByYear } from "../../utils/groupArtworksByYear"
+import GallerySectionList from "../../components/GallerySectionList.astro"
 
-const paintings = (await getCollection("paintings")).sort((a, b) => b.data.year - a.data.year)
+const sections = groupArtworksByYear(await getCollection("paintings"))
 ---
 
 <BaseLayout title="Painting Gallery">
     <main class="gallery-page">
         <h1>Paintings</h1>
-        <ul class="gallery">
-            {
-                paintings.map((artwork) => {
-                    const cover = artwork.data.images[0]
-                    const hasDetailPage = artwork.data.images.length > 1 || Boolean(artwork.data.videoSrc)
-                    return (
-                        <li>
-                            <ArtworkCard
-                                cover={cover.src}
-                                alt={cover.alt}
-                                title={artwork.data.title}
-                                year={artwork.data.year}
-                                medium={artwork.data.medium}
-                                href={hasDetailPage ? `${LINKS.paintings}/${artwork.id}` : undefined}
-                                transitionName={
-                                    hasDetailPage ? coverTransitionName(artwork.collection, artwork.id) : undefined
-                                }
-                            />
-                        </li>
-                    )
-                })
-            }
-        </ul>
+        <GallerySectionList sections={sections} />
     </main>
 </BaseLayout>
 
@@ -46,20 +23,5 @@ const paintings = (await getCollection("paintings")).sort((a, b) => b.data.year 
 
     h1 {
         margin-block-end: var(--spacing-500);
-    }
-
-    .gallery {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-500);
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    @media (max-width: 40em) {
-        .gallery {
-            grid-template-columns: 1fr;
-        }
     }
 </style>
