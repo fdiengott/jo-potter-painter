@@ -1,13 +1,15 @@
 import type { Parsed } from "../types/parsed"
 import type { StageImageResponse } from "../types/stageImageResponse"
+import { z } from "astro/zod"
+
+const stageImageResponseSchema = z.object({
+    sha: z.string().min(1),
+})
 
 export const parseStageImageResponse = (response: unknown): Parsed<StageImageResponse> => {
-    if (!response || typeof response !== "object") {
-        return { type: "error", message: "A stage image response must be an object" }
-    }
-    if (!("sha" in response) || typeof response.sha !== "string" || response.sha.length === 0) {
-        return { type: "error", message: "A stage image response must have a sha of type string" }
-    }
+    const result = stageImageResponseSchema.safeParse(response)
 
-    return { type: "success", payload: response as StageImageResponse }
+    if (!result.success) return { type: "error", message: z.prettifyError(result.error) }
+
+    return { type: "success", payload: result.data }
 }

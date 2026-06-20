@@ -8,7 +8,9 @@ export const MagicLinkSubmitted = ({ success }: Props) => {
     if (success) {
         return (
             <div className={styles.status}>
-                <h1 className={`${styles.heading} ${styles.success}`}>Magic link sent successfully!</h1>
+                <h1 className={`${styles.heading} ${styles.success}`}>
+                    If that address is authorized, a magic link is on its way!
+                </h1>
                 <p className={styles.message}>Check your email to sign in.</p>
             </div>
         )
