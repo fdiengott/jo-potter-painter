@@ -31,7 +31,7 @@ const embedUrl = videoSrc ? youtubeEmbed(videoSrc) : null
 <main class="artwork">
     <header class="artwork__header">
         <h1 class="artwork__title">{title}</h1>
-        <p class="artwork__meta">{year} · {medium}</p>
+        <p class="artwork__meta">{year} {medium && `· ${medium}`}</p>
     </header>
 
     <ul class="artwork__images">
