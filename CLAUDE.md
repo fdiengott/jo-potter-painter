@@ -42,6 +42,8 @@ src/
 Reframe from leaving comments unless the code cannot explain some very important context.
 Comments are a cost that are better not incurred.
 
+When reporting information to me, be extremely concise. Sacrifice grammar for the sake of concision.
+
 ## Tool Notes
 
 The following git commands are available in this project:
