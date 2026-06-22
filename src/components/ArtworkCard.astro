@@ -1,6 +1,8 @@
 ---
 import { Picture } from "astro:assets"
 import LinkIcon from "./LinkIcon.astro"
+import ImagePlaceholder from "./ImagePlaceholder.astro"
+import { getImagePlaceholderColorStops } from "../utils/getImagePlaceholderColorStops.ts"
 
 interface Props {
     cover: ImageMetadata
@@ -25,10 +27,13 @@ const {
     sizes = "(min-width: 40em) 50vw, 100vw",
     transitionName,
 } = Astro.props
+
+const placeholderStops = await getImagePlaceholderColorStops(cover)
 ---
 
 <figure class="card">
     <div class="card__media">
+        {placeholderStops && <ImagePlaceholder stops={placeholderStops} />}
         <Picture
             src={cover}
             formats={["avif", "webp"]}
@@ -67,10 +72,23 @@ const {
     }
 
     .card__media :global(img) {
+        position: relative;
+        z-index: 1;
         display: block;
         width: 100%;
         height: auto;
         transition: transform var(--transition-duration) ease;
+    }
+
+    :global(html.js) .card__media :global(img) {
+        opacity: 0;
+        transition:
+            transform var(--transition-duration) ease,
+            opacity var(--image-fade-duration) ease;
+    }
+
+    :global(html.js) .card__media :global(img.loaded) {
+        opacity: 1;
     }
 
     .card__media:has(.card__overlay:hover) :global(img) {

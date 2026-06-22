@@ -39,6 +39,9 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <script is:inline>
+            document.documentElement.classList.add("js")
+        </script>
         {
             !stripped && (
                 <>
@@ -68,5 +71,49 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined
     <body>
         <Header />
         <slot />
+
+        <svg class="svg-defs" aria-hidden="true" width="0" height="0" focusable="false">
+            <defs>
+                <filter id="grain">
+                    <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.47"
+                        numOctaves="2"
+                        stitchTiles="stitch"
+                        result="noise"></feTurbulence>
+                    <feColorMatrix
+                        in="noise"
+                        type="matrix"
+                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"
+                        result="grain"></feColorMatrix>
+                    <feComposite in="grain" in2="SourceGraphic" operator="in" result="grainClipped"></feComposite>
+                    <feMerge>
+                        <feMergeNode in="SourceGraphic"></feMergeNode>
+                        <feMergeNode in="grainClipped"></feMergeNode>
+                    </feMerge>
+                </filter>
+            </defs>
+        </svg>
+
+        <script>
+            for (const img of document.querySelectorAll(".card__media img")) {
+                if ("complete" in img && img.complete) {
+                    img.classList.add("loaded")
+                    continue
+                }
+                const revealImage = () => img.classList.add("loaded")
+                img.addEventListener("load", revealImage, { once: true })
+                img.addEventListener("error", revealImage, { once: true })
+            }
+        </script>
+
+        <style>
+            .svg-defs {
+                position: absolute;
+                width: 0;
+                height: 0;
+                overflow: hidden;
+            }
+        </style>
     </body>
 </html>
