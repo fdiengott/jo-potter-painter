@@ -1,0 +1,29 @@
+---
+interface Props {
+    stops: string[]
+}
+
+const { stops } = Astro.props
+
+const POS = [0, 0.5, 1].flatMap((n) => [0, 0.5, 1].map((m) => [`${m * 100}%`, `${n * 100}%`]))
+
+const gradients = stops
+    .map((color, i) => `radial-gradient(circle at ${POS[i][0]} ${POS[i][1]}, ${color} 0%, transparent 60%)`)
+    .join(", ")
+
+const base = stops[4]
+---
+
+<div class="placeholder" aria-hidden="true" style={`background-color:${base}; background-image:${gradients}`}></div>
+
+<style>
+    .placeholder {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        transform: scale(1.1);
+        background-repeat: no-repeat;
+        background-size: cover;
+        filter: url(#grain);
+    }
+</style>
