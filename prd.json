@@ -59,7 +59,7 @@
         {
             "title": "Sampled-gradient + grain placeholder before each image loads",
             "description": "Show a build-time-generated placeholder behind each gallery image while it loads, then fade the real image in. Approach (scales to hundreds of images for ~50 bytes each, needs zero client JS/hydration): at build, sharp samples a 3x3 grid of colors per cover image; render those as overlapping, blurred CSS radial gradients (CSS-only) as the card placeholder; layer a single shared SVG feTurbulence film-grain overlay for painterly texture; the real <Picture> fades opacity 0->1 on load. Requires resolving content-collection ImageMetadata to the on-disk source path to sample. Targets gallery cards (ArtworkCard via GallerySection); detail-page images (ArtworkDetail) are a follow-up.",
-            "complete": false,
+            "complete": true,
             "category": "ui"
         }
     ]
