@@ -85,6 +85,8 @@
     --transition-duration: 0.2s;
     --view-transition-duration: 0.4s;
 
+    --image-fade-duration: 0.4s;
+
     --box-shadow-400: 0 6px 24px rgb(26 24 20 / 0.12);
 
     --spacing-gutter: var(--spacing-400);

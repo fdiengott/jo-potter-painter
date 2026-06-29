@@ -17,11 +17,11 @@ these:
   browser. A blob is a loose object referenced by nothing — **no commit, no branch
   change, no build.** Each request carries one downscaled image, comfortably under 6MB.
 - **The browser accumulates a manifest** of staged Artworks: per Artwork its collection
-  + metadata, and an ordered list of `{ blobSha, alt }`. Image bytes are not re-held.
+    - metadata, and an ordered list of `{ blobSha, alt }`. Image bytes are not re-held.
 - **"Publish all" → one tiny request.** A publish Function verifies the JWT and assembles
   **one tree** (every blob SHA at its `src/assets/<collection>/…` path + every
   `src/content/<collection>/<slug>.md` entry) → **one commit** → **one ref update**
-  (`PATCH /git/refs/heads/main`). The ref update is the *only* moment a build triggers.
+  (`PATCH /git/refs/heads/main`). The ref update is the _only_ moment a build triggers.
 
 Result: multiple images per Artwork, multiple Artworks, **one commit, one build**,
 regardless of batch size. The per-request ceiling only ever has to hold one image.
@@ -39,7 +39,7 @@ Removing a staged image — or abandoning a session — just **drops its SHA fro
 client manifest**. The blob is never woven into a tree, so it stays unreachable. A
 Netlify build checks out `main`, which only transfers **reachable** objects, so orphan
 blobs never enter the working tree, history, site, or clone size; GitHub's periodic GC
-prunes them. This is *strictly better* than committing images first and deleting later
+prunes them. This is _strictly better_ than committing images first and deleting later
 (which bloats history forever): an image discarded before "Publish all" was never in
 history to begin with.
 
@@ -61,7 +61,7 @@ history to begin with.
   year, 1–5 images, alt on every image, video a valid URL if present).
 - **No Publish button on the form.** The form exits only via **Add to batch** (new),
   **Save changes** (editing), or **Discard**. This makes "publish an unsaved in-progress
-  Artwork" *structurally impossible* rather than something to warn against.
+  Artwork" _structurally impossible_ rather than something to warn against.
 - **Publish speedbump.** Publishing opens an **image-free confirmation modal**
   summarising each Artwork (title, photo count, the Cover's alt text, has-video) before
   the commit — the one guard that matters because the flow is **create-only**: there is
@@ -79,8 +79,8 @@ defined, precisely so they could diverge) to actually diverge:
 
 ## Consequences
 
-- **Revises ADR 0003's** "single request" detail: the publish path is now *many* small
-  JWT-verified blob requests + *one* small commit request, and the unit widens from one
+- **Revises ADR 0003's** "single request" detail: the publish path is now _many_ small
+  JWT-verified blob requests + _one_ small commit request, and the unit widens from one
   Artwork to a batch. ADR 0003's trust boundary, allowlist-before-send magic-link auth,
   unique append-only filenames, external-URL-only video, and Trees-API-over-Contents-API
   reasoning all still hold.
@@ -90,7 +90,7 @@ defined, precisely so they could diverge) to actually diverge:
   `git/blobs`); the publish Function `netlify/functions/submitImages.ts` (`/submit-images`)
   is still a stub. `MultiImageForm` was reworked to accumulate the batch and post to it.
 - `src/types/imageData.ts` (`ImageData`, which previously put title/year/medium/video on
-  every *image*) is restructured to the Artwork shape: collection + Artwork metadata +
+  every _image_) is restructured to the Artwork shape: collection + Artwork metadata +
   an ordered `images: { blobSha, alt }[]`.
 - `src/content.config.ts` changes (ceramics `medium` removed; paintings `medium`
   optional). Existing ceramic seed entries' `medium` frontmatter becomes ignored, and the

@@ -15,6 +15,11 @@ pnpm only (`engine-strict`):
 - `pnpm start` — dev server (`astro dev`)
 - `pnpm build` — production build (`astro build`)
 - `pnpm preview` — preview the build (`astro preview`)
+- `pnpm build`
+- `pnpm format` - prettier
+- `pnpm format:check` - prettier --check .
+- `pnpm typecheck` - tsc
+- `pnpm test` - vitest run
 
 ## Structure
 
@@ -36,6 +41,8 @@ src/
 
 Reframe from leaving comments unless the code cannot explain some very important context.
 Comments are a cost that are better not incurred.
+
+When reporting information to me, be extremely concise. Sacrifice grammar for the sake of concision.
 
 ## Tool Notes
 

@@ -12,7 +12,7 @@ export const isValidArtwork = ({ title, year, images, videoSrc }: DraftArtwork):
     year > 0 &&
     images.length >= 1 &&
     images.length <= MAX_IMAGES &&
-    images.every((image) => image.status === "uploaded" && image.alt.trim().length > 0) &&
+    images.every((image) => image.status === "success" && image.alt.trim().length > 0) &&
     (videoSrc.trim() === "" || isValidUrl(videoSrc.trim()))
 
 const isValidUrl = (value: string) => {

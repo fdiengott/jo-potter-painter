@@ -3,7 +3,7 @@ import { glob } from "astro/loaders"
 import { z } from "astro/zod"
 
 // images: 1–5 per Artwork. images[0] is the Cover (the image shown on the
-// images.length > 1 || video
+// images.length > 1 || videoSrc
 // Gallery). An Artwork earns a detail page only when it has more to show —
 
 const paintings = defineCollection({
@@ -13,6 +13,7 @@ const paintings = defineCollection({
             title: z.string(),
             year: z.number().int(),
             medium: z.string().optional(),
+            order: z.number().int().optional(),
             images: z
                 .array(z.object({ src: image(), alt: z.string() }))
                 .min(1)
@@ -27,6 +28,8 @@ const ceramics = defineCollection({
         z.object({
             title: z.string(),
             year: z.number().int(),
+            medium: z.string().optional(),
+            order: z.number().int().optional(),
             images: z
                 .array(z.object({ src: image(), alt: z.string() }))
                 .min(1)
